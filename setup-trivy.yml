@@ -1,0 +1,25 @@
+name: Setup Trivy
+
+permissions: {}
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-trivy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-trivy
+        with:
+          version: "v0.62.1"
+          architecture: "64bit"
+          sha256: "7da92b2ca503d08eb15e717585fa4ffb95ef2c5dc4c554204882d7d26d386a6a"
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
