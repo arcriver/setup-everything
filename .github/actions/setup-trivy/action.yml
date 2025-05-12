@@ -21,10 +21,6 @@ inputs:
     required: false
     default: "/usr/local/bin"
 
-  github-token:
-    description: "GitHub token for authentication"
-    required: true
-
 runs:
   using: "composite"
   steps:
@@ -41,7 +37,7 @@ runs:
       id: download-trivy
       shell: bash
       env:
-        GH_TOKEN: "${{ inputs.github-token }}"
+        GH_TOKEN: "${{ github.token }}"
         TEMP_DIR: "${{ steps.create-temp-directory.outputs.temp_dir }}"
         VERSION: "${{ inputs.version }}"
         ARCHITECTURE: "${{ inputs.architecture }}"
