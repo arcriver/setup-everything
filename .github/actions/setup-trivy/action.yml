@@ -7,7 +7,7 @@ inputs:
     required: true
     default: "0.62.1"
 
-  architecture:
+  arch:
     description: "Target architecture (e.g. X64, ARM64, ARM, IA32)"
     required: false
     default: "${{ runner.arch }}"
@@ -43,12 +43,12 @@ runs:
       shell: bash
       env:
         VERSION: "${{ inputs.version }}"
-        ARCHITECTURE: "${{ inputs.architecture }}"
+        ARCH: "${{ inputs.arch }}"
         SHA256: "${{ inputs.sha256 }}"
         TEMP_DIR: "${{ steps.create-temp-directory.outputs.temp_dir }}"
         GH_TOKEN: "${{ inputs.github-token }}"
       run: |
-        ARCHITECTURE=$(echo "${ARCHITECTURE}" | awk 'BEGIN {
+        ARCH=$(echo "${ARCH}" | awk 'BEGIN {
           map["X64"]   = "64bit"
           map["IA32"]  = "32bit"
           map["ARM64"] = "ARM64"
@@ -58,7 +58,7 @@ runs:
           print ($1 in map) ? map[$1] : $1
         }')
 
-        PATTERN="trivy_${VERSION}_Linux-${ARCHITECTURE}.tar.gz"
+        PATTERN="trivy_${VERSION}_Linux-${ARCH}.tar.gz"
 
         ./scripts/download.sh \
           -r aquasecurity/trivy \
