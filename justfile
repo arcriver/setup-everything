@@ -1,5 +1,16 @@
-build-image:
-    docker build -t act-with-gh .
+bake:
+    docker buildx bake --load
 
-test:
-    act -W setup-trivy.yml -P ubuntu-latest=act-with-gh --pull=false -j setup-trivy -s GITHUB_TOKEN=$(gh auth token)
+test workflow arch:
+    act \
+        --container-architecture linux/{{arch}} \
+        --pull=false \
+        -W test/{{workflow}}.yml \
+        -P ubuntu-latest=act-with-gh-{{arch}}:latest
+
+test-workflow workflow:
+    just test {{workflow}} amd64
+    just test {{workflow}} arm64
+
+test-all:
+    just test-workflow setup-trivy

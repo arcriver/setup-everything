@@ -5,12 +5,12 @@ inputs:
   version:
     description: "Version of Trivy to install"
     required: true
-    default: "v0.62.1"
+    default: "0.62.1"
 
   architecture:
-    description: "Target architecture (e.g. 64bit, ARM64)"
-    required: true
-    default: "64bit"
+    description: "Target architecture (e.g. X64, ARM64, ARM, IA32)"
+    required: false
+    default: "${{ runner.arch }}"
 
   sha256:
     description: "SHA256 checksum to verify the downloaded tarball"
@@ -20,6 +20,11 @@ inputs:
     description: "Directory to install Trivy"
     required: false
     default: "/usr/local/bin"
+
+  github-token:
+    description: "GitHub token for authentication"
+    required: false
+    default: "${{ github.token }}"
 
 runs:
   using: "composite"
@@ -37,42 +42,38 @@ runs:
       id: download-trivy
       shell: bash
       env:
-        GH_TOKEN: "${{ github.token }}"
-        TEMP_DIR: "${{ steps.create-temp-directory.outputs.temp_dir }}"
         VERSION: "${{ inputs.version }}"
         ARCHITECTURE: "${{ inputs.architecture }}"
+        SHA256: "${{ inputs.sha256 }}"
+        TEMP_DIR: "${{ steps.create-temp-directory.outputs.temp_dir }}"
+        GH_TOKEN: "${{ inputs.github-token }}"
       run: |
-        echo "::group::Downloading Trivy release asset"
+        ARCHITECTURE=$(echo "${ARCHITECTURE}" | awk 'BEGIN {
+          map["X64"]   = "64bit"
+          map["IA32"]  = "32bit"
+          map["ARM64"] = "ARM64"
+          map["ARM"]   = "ARM"
+        }
+        {
+          print ($1 in map) ? map[$1] : $1
+        }')
 
-        gh release download "$VERSION" \
-          --repo aquasecurity/trivy \
-          --pattern "trivy_${VERSION#v}_Linux-${ARCHITECTURE}.tar.gz" \
-          --dir "$TEMP_DIR"
+        PATTERN="trivy_${VERSION}_Linux-${ARCHITECTURE}.tar.gz"
 
-        TARBALL=$(find "$TEMP_DIR" -name "trivy_${VERSION#v}_Linux-${ARCHITECTURE}.tar.gz")
+        ./scripts/download.sh \
+          -r aquasecurity/trivy \
+          -v "v${VERSION}" \
+          -p "${PATTERN}" \
+          -s "${SHA256}" \
+          -o "${TEMP_DIR}"
+
+        TARBALL=$(find "$TEMP_DIR" -name "${PATTERN}")
         if [ -z "$TARBALL" ]; then
           echo "::error::Failed to download Trivy release asset."
           exit 1
         fi
 
         echo "tarball=$TARBALL" >> $GITHUB_OUTPUT
-
-        echo "::endgroup::"
-
-    - name: Verify checksum
-      shell: bash
-      env:
-        SHA256: "${{ inputs.sha256 }}"
-        TARBALL: "${{ steps.download-trivy.outputs.tarball }}"
-      run: |
-        echo "::group::Verifying checksum"
-
-        if ! echo "${SHA256}  ${TARBALL}" | sha256sum -c -; then
-          echo "::error::Checksum verification failed! The downloaded file does not match the expected SHA256 checksum."
-          exit 1
-        fi
-
-        echo "::endgroup::"
 
     - name: Extract Trivy
       shell: bash
@@ -97,4 +98,14 @@ runs:
 
     - name: Verify installation
       shell: bash
-      run: trivy --version
+      run: command -v trivy
+
+    - name: Cleanup
+      if: always()
+      shell: bash
+      env:
+        TEMP_DIR: "${{ steps.create-temp-directory.outputs.temp_dir }}"
+      run: |
+        echo "::group::Cleaning up temporary directory"
+        rm -rf "${TEMP_DIR}"
+        echo "::endgroup::"
