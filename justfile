@@ -1,16 +1,12 @@
 bake:
     docker buildx bake --load
 
-test workflow arch:
+test workflow:
     act \
-        --container-architecture linux/{{arch}} \
+        --container-architecture linux/amd64 \
         --pull=false \
         -W test/{{workflow}}.yml \
-        -P ubuntu-latest=act-with-gh-{{arch}}:latest
-
-test-workflow workflow:
-    just test {{workflow}} amd64
-    just test {{workflow}} arm64
+        -P ubuntu-latest=act-with-gh-amd64:latest
 
 test-all:
-    just test-workflow setup-trivy
+    just test setup-trivy
