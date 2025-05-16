@@ -18,15 +18,19 @@ jobs:
           persist-credentials: false
 
       - name: Setup Trivy for X64
-        if: runner.arch == 'X64'
         uses: ./.github/actions/setup-trivy
         with:
           version: 0.62.1
+          arch: X64
           sha256: 7da92b2ca503d08eb15e717585fa4ffb95ef2c5dc4c554204882d7d26d386a6a
 
       - name: Setup Trivy for ARM64
-        if: runner.arch == 'ARM64'
         uses: ./.github/actions/setup-trivy
         with:
           version: 0.62.1
           sha256: 50e13c5cdd3e3b610e0dc554e3bc58bc6f58eabe3e42a6b28961a23ac6eff0df
+
+      - name: Verify Trivy installation
+        shell: bash
+        run: |
+          trivy --help

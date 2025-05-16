@@ -12,6 +12,11 @@ inputs:
     required: false
     default: "${{ runner.arch }}"
 
+  os:
+    description: "Target operating system (e.g. Linux, Windows, macOS)"
+    required: false
+    default: "${{ runner.os }}"
+
   sha256:
     description: "SHA256 checksum to verify the downloaded tarball"
     required: true
@@ -29,83 +34,49 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Create temp directory
-      id: create-temp-directory
-      shell: bash
-      run: |
-        echo "::group::Creating temporary directory"
-        TEMP_DIR=$(mktemp -d)
-        echo "temp_dir=$TEMP_DIR" >> $GITHUB_OUTPUT
-        echo "::endgroup::"
+    - name: Cache Trivy
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: artifact.tar.gz
+        key: ${{ inputs.sha256 }}
 
     - name: Download Trivy release asset
+      if: steps.cache.outputs.cache-hit != 'true'
       id: download-trivy
       shell: bash
       env:
-        VERSION: "${{ inputs.version }}"
-        ARCH: "${{ inputs.arch }}"
-        SHA256: "${{ inputs.sha256 }}"
-        TEMP_DIR: "${{ steps.create-temp-directory.outputs.temp_dir }}"
+        _ARCH: "${{ inputs.arch }}"
+        _OS: "${{ inputs.os }}"
+        _VERSION: "${{ inputs.version }}"
+        _INSTALL_DIR: "${{ inputs.install-dir }}"
+        _SHA256: "${{ inputs.sha256 }}"
         GH_TOKEN: "${{ inputs.github-token }}"
       run: |
-        ARCH=$(echo "${ARCH}" | awk 'BEGIN {
-          map["X64"]   = "64bit"
-          map["IA32"]  = "32bit"
-          map["ARM64"] = "ARM64"
-          map["ARM"]   = "ARM"
-        }
-        {
-          print ($1 in map) ? map[$1] : $1
-        }')
-
-        PATTERN="trivy_${VERSION}_Linux-${ARCH}.tar.gz"
-
-        ./scripts/download.sh \
-          -r aquasecurity/trivy \
-          -v "v${VERSION}" \
-          -p "${PATTERN}" \
-          -s "${SHA256}" \
-          -o "${TEMP_DIR}"
-
-        TARBALL=$(find "$TEMP_DIR" -name "${PATTERN}")
-        if [ -z "$TARBALL" ]; then
-          echo "::error::Failed to download Trivy release asset."
-          exit 1
-        fi
-
-        echo "tarball=$TARBALL" >> $GITHUB_OUTPUT
-
-    - name: Extract Trivy
-      shell: bash
-      env:
-        TARBALL: "${{ steps.download-trivy.outputs.tarball }}"
-        TEMP_DIR: "${{ steps.create-temp-directory.outputs.temp_dir }}"
-      run: |
-        echo "::group::Extracting Trivy"
-        tar -xzf "${TARBALL}" -C "${TEMP_DIR}"
-        echo "::endgroup::"
+        ./scripts/download.py \
+          --architecture "${_ARCH}" \
+          --os "${_OS}" \
+          --version "${_VERSION}" \
+          --file "artifact.tar.gz" \
+          --sha256 "${_SHA256}" \
+          --github-token "${GH_TOKEN}" \
+          --repo "aquasecurity/trivy" \
+          --pattern "trivy_{version}_{os_name}-{architecture}.tar.gz" \
+          --map-arch X64=64bit \
+          --map-arch IA32=32bit \
+          --map-arch ARM=ARM \
+          --map-arch ARM64=ARM64 \
+          --map-os Windows=windows \
 
     - name: Install Trivy
       shell: bash
-      env:
-        TEMP_DIR: "${{ steps.create-temp-directory.outputs.temp_dir }}"
-        INSTALL_DIR: "${{ inputs.install-dir }}"
       run: |
-        echo "::group::Installing Trivy"
-        sudo cp "${TEMP_DIR}/trivy" "${INSTALL_DIR}/trivy"
-        sudo chmod +x "${INSTALL_DIR}/trivy"
-        echo "::endgroup::"
+        mkdir -p "${{ inputs.install-dir }}"
+        TEMP_DIR=$(mktemp -d)
+        tar -xzf artifact.tar.gz -C "${TEMP_DIR}"
+        chmod +x "${TEMP_DIR}/trivy"
+        mv -f "${TEMP_DIR}/trivy" "${{ inputs.install-dir }}/trivy"
 
     - name: Verify installation
       shell: bash
       run: command -v trivy
-
-    - name: Cleanup
-      if: always()
-      shell: bash
-      env:
-        TEMP_DIR: "${{ steps.create-temp-directory.outputs.temp_dir }}"
-      run: |
-        echo "::group::Cleaning up temporary directory"
-        rm -rf "${TEMP_DIR}"
-        echo "::endgroup::"
