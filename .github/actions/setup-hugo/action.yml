@@ -1,0 +1,86 @@
+name: "Install Hugo"
+description: "Installs a specific version of Hugo"
+
+inputs:
+  version:
+    description: "Version of Hugo to install"
+    required: true
+
+  arch:
+    description: "Target architecture (e.g. X64, ARM64, ARM)"
+    required: false
+    default: "${{ runner.arch }}"
+
+  os:
+    description: "Target operating system (e.g. Linux, Windows, macOS)"
+    required: false
+    default: "${{ runner.os }}"
+
+  sha256:
+    description: "SHA256 checksum to verify the downloaded tarball"
+    required: true
+
+  install-dir:
+    description: "Directory to install Hugo"
+    required: false
+    default: "/usr/local/bin"
+
+  github-token:
+    description: "GitHub token for authentication"
+    required: false
+    default: "${{ github.token }}"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Hugo
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: artifact.tar.gz
+        key: hugo-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
+
+    - name: Download Hugo release asset
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        _ARCH: "${{ inputs.arch }}"
+        _OS: "${{ inputs.os }}"
+        _VERSION: "${{ inputs.version }}"
+        _INSTALL_DIR: "${{ inputs.install-dir }}"
+        _SHA256: "${{ inputs.sha256 }}"
+        _GH_TOKEN: "${{ inputs.github-token }}"
+      run: |
+        # Download the Hugo release asset
+        ${{ github.action_path }}/../../../scripts/download.py \
+          --arch "${_ARCH}" \
+          --os "${_OS}" \
+          --version "${_VERSION}" \
+          --file "artifact.tar.gz" \
+          --sha256 "${_SHA256}" \
+          --github-token "${_GH_TOKEN}" \
+          --repo "gohugoio/hugo" \
+          --pattern "hugo_{version}_{os}-{arch}.tar.gz" \
+          --map-arch X64=amd64 \
+          --map-arch ARM64=arm64 \
+          --map-arch ARM=arm \
+          --map-os Linux=linux \
+          --map-os Windows=windows \
+          --map-os macOS=darwin
+
+    - name: Install Hugo
+      shell: bash
+      env:
+        _INSTALL_DIR: "${{ inputs.install-dir }}"
+      run: |
+        TEMP_DIR=$(mktemp -d)
+        tar -xf artifact.tar.gz -C "${TEMP_DIR}"
+
+        mkdir -p "${_INSTALL_DIR}"
+        chmod +x "${TEMP_DIR}/hugo"
+        mv -f "${TEMP_DIR}/hugo" "${_INSTALL_DIR}/hugo"
+
+    - name: Verify installation
+      shell: bash
+      run: |
+        command -v hugo

@@ -22,7 +22,7 @@ jobs:
         with:
           version: 0.62.1
           arch: ARM64
-          sha256: 50e13c5cdd3e3b610e0dc554e3bc58bc6f58eabe3e42a6b28961a23ac6eff0db
+          sha256: 50e13c5cdd3e3b610e0dc554e3bc58bc6f58eabe3e42a6b28961a23ac6eff0df
 
       - name: Setup Trivy for X64
         uses: ./.github/actions/setup-trivy

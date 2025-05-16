@@ -22,7 +22,7 @@ jobs:
         with:
           version: 0.49.1
           arch: ARM64
-          sha256: a50391b92e23634faef344a4832084e7c774fd2f51319e307bf5b76e04303bdb
+          sha256: a50391b92e23634faef344a4832084e7c774fd2f51319e307bf5b76e04303bd8
 
       - name: Setup Proto for X64
         uses: ./.github/actions/setup-proto
