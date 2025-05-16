@@ -76,7 +76,7 @@ runs:
         _INSTALL_DIR: "${{ inputs.install-dir }}"
       run: |
         TEMP_DIR=$(mktemp -d)
-        tar -xzf artifact.tar.gz -C "${TEMP_DIR}"
+        tar -xf artifact.tar.gz -C "${TEMP_DIR}"
 
         mkdir -p "${_INSTALL_DIR}"
         chmod +x "${TEMP_DIR}/kubeconform"

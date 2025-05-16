@@ -12,5 +12,6 @@ test workflow:
         -P ubuntu-latest=runner-amd64:latest
 
 test-all:
-    just test setup-trivy
     just test setup-kubeconform
+    just test setup-proto
+    just test setup-trivy

@@ -1,14 +1,14 @@
-name: "Install Trivy"
-description: "Installs a specific version of Trivy"
+name: "Install Proto"
+description: "Installs a specific version of Proto CLI"
 
 inputs:
   version:
-    description: "Version of Trivy to install"
+    description: "Version of Proto to install"
     required: true
-    default: "0.62.1"
+    default: "0.49.1"
 
   arch:
-    description: "Target architecture (e.g. X64, ARM64, ARM, IA32)"
+    description: "Target architecture (e.g. X64, ARM64)"
     required: false
     default: "${{ runner.arch }}"
 
@@ -18,11 +18,11 @@ inputs:
     default: "${{ runner.os }}"
 
   sha256:
-    description: "SHA256 checksum to verify the downloaded tarball"
+    description: "SHA256 checksum to verify the downloaded archive"
     required: true
 
   install-dir:
-    description: "Directory to install Trivy"
+    description: "Directory to install Proto"
     required: false
     default: "/usr/local/bin"
 
@@ -34,16 +34,16 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache Trivy
+    - name: Cache Proto
       id: cache
       uses: actions/cache@v4
       with:
-        path: artifact.tar.gz
-        key: trivy-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
+        path: artifact.tar.xz
+        key: proto-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
-    - name: Download Trivy release asset
+    - name: Download Proto release asset
       if: steps.cache.outputs.cache-hit != 'true'
-      id: download-trivy
+      id: download-proto
       shell: bash
       env:
         _ARCH: "${{ inputs.arch }}"
@@ -57,29 +57,30 @@ runs:
           --arch "${_ARCH}" \
           --os "${_OS}" \
           --version "${_VERSION}" \
-          --file "artifact.tar.gz" \
+          --file "artifact.tar.xz" \
           --sha256 "${_SHA256}" \
           --github-token "${GH_TOKEN}" \
-          --repo "aquasecurity/trivy" \
-          --pattern "trivy_{version}_{os}-{arch}.tar.gz" \
-          --map-arch X64=64bit \
-          --map-arch IA32=32bit \
-          --map-arch ARM=ARM \
-          --map-arch ARM64=ARM64 \
-          --map-os Windows=windows
+          --repo "moonrepo/proto" \
+          --pattern "proto_cli-{arch}-{os}.tar.xz" \
+          --map-arch X64=x86_64 \
+          --map-arch ARM64=aarch64 \
+          --map-os Linux=unknown-linux-gnu \
+          --map-os macOS=apple-darwin \
+          --map-os Windows=pc-windows-msvc
 
-    - name: Install Trivy
+    - name: Install Proto
       shell: bash
       env:
         _INSTALL_DIR: "${{ inputs.install-dir }}"
       run: |
         TEMP_DIR=$(mktemp -d)
-        tar -xf artifact.tar.gz -C "${TEMP_DIR}"
+        tar --strip-components=1 -xf artifact.tar.xz -C "${TEMP_DIR}"
 
         mkdir -p "${_INSTALL_DIR}"
-        chmod +x "${TEMP_DIR}/trivy"
-        mv -f "${TEMP_DIR}/trivy" "${_INSTALL_DIR}/trivy"
+        chmod +x "${TEMP_DIR}/proto"
+        mv -f "${TEMP_DIR}/proto" "${_INSTALL_DIR}/proto"
 
     - name: Verify installation
       shell: bash
-      run: command -v trivy
+      run: |
+        command -v proto
