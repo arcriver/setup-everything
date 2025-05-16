@@ -93,6 +93,8 @@ def fetch_release_data(repo, release, github_token):
     }
     request = urllib.request.Request(api_url, headers=headers)
 
+    print(f"Fetching releases from {api_url}...")
+
     try:
         with urllib.request.urlopen(request) as response:
             if response.status != 200:
@@ -114,6 +116,8 @@ def download_artifact(asset_url, output_file, github_token):
     headers = {"Authorization": f"token {github_token}"}
     request = urllib.request.Request(asset_url, headers=headers)
 
+    print(f"Downloading artifact from {asset_url}...")
+
     try:
         with (
             urllib.request.urlopen(request) as response,
@@ -130,6 +134,7 @@ def download_artifact(asset_url, output_file, github_token):
 
 def verify_checksum(file_path, expected_sha256):
     sha256_hash = hashlib.sha256()
+
     with open(file_path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             sha256_hash.update(chunk)
@@ -137,7 +142,9 @@ def verify_checksum(file_path, expected_sha256):
     calculated_sha256 = sha256_hash.hexdigest()
     if calculated_sha256 != expected_sha256:
         print(
-            f"Checksum verification failed! Expected: {expected_sha256}, Got: {calculated_sha256}"
+            f"Checksum verification failed!\n"
+            f"Expected: {expected_sha256.ljust(32)}\n"
+            f"Got:      {calculated_sha256.ljust(32)}"
         )
         sys.exit(1)
 
@@ -149,6 +156,9 @@ def main():
 
     arch = map_arch(args.arch, args.map_arch)
     os_name = map_os(args.os, args.map_os)
+
+    print(f"Mapped architecture: {arch}")
+    print(f"Mapped OS: {os_name}")
 
     pattern = args.pattern.format(version=args.version, release=args.release, os=os_name, arch=arch)
 
