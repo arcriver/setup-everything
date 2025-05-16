@@ -54,14 +54,14 @@ runs:
         GH_TOKEN: "${{ inputs.github-token }}"
       run: |
         ./scripts/download.py \
-          --architecture "${_ARCH}" \
+          --arch "${_ARCH}" \
           --os "${_OS}" \
           --version "${_VERSION}" \
           --file "artifact.tar.gz" \
           --sha256 "${_SHA256}" \
           --github-token "${GH_TOKEN}" \
           --repo "aquasecurity/trivy" \
-          --pattern "trivy_{version}_{os_name}-{architecture}.tar.gz" \
+          --pattern "trivy_{version}_{os}-{arch}.tar.gz" \
           --map-arch X64=64bit \
           --map-arch IA32=32bit \
           --map-arch ARM=ARM \
