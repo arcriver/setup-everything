@@ -33,4 +33,4 @@ jobs:
       - name: Verify Trivy installation
         shell: bash
         run: |
-          trivy --help
+          trivy --version

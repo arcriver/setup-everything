@@ -13,3 +13,4 @@ test workflow:
 
 test-all:
     just test setup-trivy
+    just test setup-kubeconform

@@ -1,11 +1,11 @@
-name: "Install Trivy"
-description: "Installs a specific version of Trivy"
+name: "Install Kubeconform"
+description: "Installs a specific version of Kubeconform"
 
 inputs:
   version:
-    description: "Version of Trivy to install"
+    description: "Version of Kubeconform to install"
     required: true
-    default: "0.62.1"
+    default: "0.7.0"
 
   arch:
     description: "Target architecture (e.g. X64, ARM64, ARM, IA32)"
@@ -22,7 +22,7 @@ inputs:
     required: true
 
   install-dir:
-    description: "Directory to install Trivy"
+    description: "Directory to install Kubeconform"
     required: false
     default: "/usr/local/bin"
 
@@ -34,16 +34,16 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache Trivy
+    - name: Cache Kubeconform
       id: cache
       uses: actions/cache@v4
       with:
         path: artifact.tar.gz
-        key: trivy-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
+        key: kubeconform-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
-    - name: Download Trivy release asset
+    - name: Download Kubeconform release asset
       if: steps.cache.outputs.cache-hit != 'true'
-      id: download-trivy
+      id: download-kubeconform
       shell: bash
       env:
         _ARCH: "${{ inputs.arch }}"
@@ -60,15 +60,17 @@ runs:
           --file "artifact.tar.gz" \
           --sha256 "${_SHA256}" \
           --github-token "${GH_TOKEN}" \
-          --repo "aquasecurity/trivy" \
-          --pattern "trivy_{version}_{os}-{arch}.tar.gz" \
-          --map-arch X64=64bit \
-          --map-arch IA32=32bit \
-          --map-arch ARM=ARM \
-          --map-arch ARM64=ARM64 \
-          --map-os Windows=windows
+          --repo "yannh/kubeconform" \
+          --pattern "kubeconform-{os}-{arch}.tar.gz" \
+          --map-arch X64=amd64 \
+          --map-arch IA32=386 \
+          --map-arch ARM=armv6 \
+          --map-arch ARM64=arm64 \
+          --map-os Linux=linux \
+          --map-os Windows=windows \
+          --map-os macOS=darwin
 
-    - name: Install Trivy
+    - name: Install Kubeconform
       shell: bash
       env:
         _INSTALL_DIR: "${{ inputs.install-dir }}"
@@ -77,9 +79,10 @@ runs:
         tar -xzf artifact.tar.gz -C "${TEMP_DIR}"
 
         mkdir -p "${_INSTALL_DIR}"
-        chmod +x "${TEMP_DIR}/trivy"
-        mv -f "${TEMP_DIR}/trivy" "${_INSTALL_DIR}/trivy"
+        chmod +x "${TEMP_DIR}/kubeconform"
+        mv -f "${TEMP_DIR}/kubeconform" "${_INSTALL_DIR}/kubeconform"
 
     - name: Verify installation
       shell: bash
-      run: command -v trivy
+      run: |
+        command -v kubeconform
