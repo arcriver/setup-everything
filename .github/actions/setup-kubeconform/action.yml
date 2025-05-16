@@ -5,7 +5,6 @@ inputs:
   version:
     description: "Version of Kubeconform to install"
     required: true
-    default: "0.7.0"
 
   arch:
     description: "Target architecture (e.g. X64, ARM64, ARM, IA32)"
@@ -53,6 +52,7 @@ runs:
         _SHA256: "${{ inputs.sha256 }}"
         GH_TOKEN: "${{ inputs.github-token }}"
       run: |
+        # Download the Kubeconform release asset
         ${{ github.action_path }}/../../../scripts/download.py \
           --arch "${_ARCH}" \
           --os "${_OS}" \
