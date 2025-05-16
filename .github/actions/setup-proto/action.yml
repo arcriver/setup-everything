@@ -42,7 +42,6 @@ runs:
 
     - name: Download Proto release asset
       if: steps.cache.outputs.cache-hit != 'true'
-      id: download-proto
       shell: bash
       env:
         _ARCH: "${{ inputs.arch }}"
@@ -50,7 +49,7 @@ runs:
         _VERSION: "${{ inputs.version }}"
         _INSTALL_DIR: "${{ inputs.install-dir }}"
         _SHA256: "${{ inputs.sha256 }}"
-        GH_TOKEN: "${{ inputs.github-token }}"
+        _GH_TOKEN: "${{ inputs.github-token }}"
       run: |
         # Download the Proto release asset
         ${{ github.action_path }}/../../../scripts/download.py \
@@ -59,7 +58,7 @@ runs:
           --version "${_VERSION}" \
           --file "artifact.tar.xz" \
           --sha256 "${_SHA256}" \
-          --github-token "${GH_TOKEN}" \
+          --github-token "${_GH_TOKEN}" \
           --repo "moonrepo/proto" \
           --pattern "proto_cli-{arch}-{os}.tar.xz" \
           --map-arch X64=x86_64 \
