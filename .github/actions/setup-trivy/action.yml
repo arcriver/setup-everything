@@ -39,7 +39,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: artifact.tar.gz
-        key: ${{ inputs.sha256 }}
+        key: trivy-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
     - name: Download Trivy release asset
       if: steps.cache.outputs.cache-hit != 'true'
@@ -66,7 +66,7 @@ runs:
           --map-arch IA32=32bit \
           --map-arch ARM=ARM \
           --map-arch ARM64=ARM64 \
-          --map-os Windows=windows \
+          --map-os Windows=windows
 
     - name: Install Trivy
       shell: bash
