@@ -10,9 +10,7 @@ import sys
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(
-        description="Download a GitHub release artifact."
-    )
+    parser = argparse.ArgumentParser(description="Download a GitHub release artifact.")
     parser.add_argument(
         "--arch",
         required=True,
@@ -25,6 +23,10 @@ def parse_arguments():
     )
     parser.add_argument(
         "--version", required=True, help="Version number of the release (e.g., 0.62.1)"
+    )
+    parser.add_argument(
+        "--release",
+        help="Release tag of the GitHub release (defaults to --version)",
     )
     parser.add_argument("--file", required=True, help="Path to download the artifact")
     parser.add_argument(
@@ -53,7 +55,13 @@ def parse_arguments():
         action="append",
         help="Custom OS mapping in the format SOURCE=TARGET",
     )
-    return parser.parse_args()
+
+    args = parser.parse_args()
+
+    if not args.release:
+        args.release = f"v{args.version}"
+
+    return args
 
 
 def map_arch(arch, custom_arch_map):
@@ -76,8 +84,8 @@ def map_os(os, custom_os_map):
     return os_map.get(os, os)
 
 
-def fetch_release_data(repo, version, github_token):
-    api_url = f"https://api.github.com/repos/{repo}/releases/tags/v{version}"
+def fetch_release_data(repo, release, github_token):
+    api_url = f"https://api.github.com/repos/{repo}/releases/tags/{release}"
 
     headers = {
         "Authorization": f"token {github_token}",
@@ -92,6 +100,7 @@ def fetch_release_data(repo, version, github_token):
                     f"Failed to fetch release information: {response.status} {response.reason}"
                 )
                 sys.exit(1)
+
             return json.loads(response.read().decode())
     except HTTPError as e:
         print(f"HTTP Error: {e.code} {e.reason}")
@@ -124,12 +133,14 @@ def verify_checksum(file_path, expected_sha256):
     with open(file_path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             sha256_hash.update(chunk)
+
     calculated_sha256 = sha256_hash.hexdigest()
     if calculated_sha256 != expected_sha256:
         print(
             f"Checksum verification failed! Expected: {expected_sha256}, Got: {calculated_sha256}"
         )
         sys.exit(1)
+
     print("Checksum verification passed.")
 
 
@@ -139,9 +150,9 @@ def main():
     arch = map_arch(args.arch, args.map_arch)
     os_name = map_os(args.os, args.map_os)
 
-    pattern = args.pattern.format(version=args.version, os=os_name, arch=arch)
+    pattern = args.pattern.format(version=args.version, release=args.release, os=os_name, arch=arch)
 
-    release_data = fetch_release_data(args.repo, args.version, args.github_token)
+    release_data = fetch_release_data(args.repo, args.release, args.github_token)
     asset = next(
         (a for a in release_data.get("assets", []) if pattern in a["name"]), None
     )
