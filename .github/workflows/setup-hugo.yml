@@ -7,29 +7,32 @@ on:
 
 jobs:
   setup-hugo:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     permissions:
       contents: read
+
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            arch: X64
+            sha256: 294d995bd3bdcbb88d851fee61213322a53aa474125c0a6b09262e9c648cc83d
+          - os: ubuntu-24.04-arm
+            arch: ARM64
+            sha256: 314ecc637d544834d70f0d2a1432e3aa660feee7d40cd4ca1d23d27d9a63dd36
 
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
 
-      - name: Setup Hugo for ARM64
+      - name: Setup Hugo
         uses: ./.github/actions/setup-hugo
         with:
           version: 0.147.3
-          arch: ARM64
-          sha256: 314ecc637d544834d70f0d2a1432e3aa660feee7d40cd4ca1d23d27d9a63dd36
-
-      - name: Setup Hugo for X64
-        uses: ./.github/actions/setup-hugo
-        with:
-          version: 0.147.3
-          arch: X64
-          sha256: 294d995bd3bdcbb88d851fee61213322a53aa474125c0a6b09262e9c648cc83d
+          arch: ${{ matrix.arch }}
+          sha256: ${{ matrix.sha256 }}
 
       - name: Verify Hugo installation
         shell: bash
