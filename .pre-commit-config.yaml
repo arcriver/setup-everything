@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: zizmor
+        name: Run Zizmor
+        entry: zizmor .
+        language: system
+        pass_filenames: false
+        types: [file]
