@@ -18,9 +18,9 @@ jobs:
           - os: ubuntu-24.04
             arch: X64
             sha256: 294d995bd3bdcbb88d851fee61213322a53aa474125c0a6b09262e9c648cc83d
-          - os: ubuntu-24.04-arm
-            arch: ARM64
-            sha256: 314ecc637d544834d70f0d2a1432e3aa660feee7d40cd4ca1d23d27d9a63dd36
+          - os: macos-latest
+            arch: universal
+            sha256: e2801e5fa8fe2406fb63b2dbf554ef51f79635e1bf6e13fcd1259967554ecedb
 
     steps:
       - uses: actions/checkout@v4
