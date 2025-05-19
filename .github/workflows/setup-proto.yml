@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup-proto:
-    runs-on: ubuntu-latest
+  setup-proto-x64:
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: read
@@ -17,21 +17,37 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Proto for ARM64
-        uses: ./.github/actions/setup-proto
-        with:
-          version: 0.49.1
-          arch: ARM64
-          sha256: a50391b92e23634faef344a4832084e7c774fd2f51319e307bf5b76e04303bd8
-
-      - name: Setup Proto for X64
+      - name: Setup Proto (X64)
         uses: ./.github/actions/setup-proto
         with:
           version: 0.49.1
           arch: X64
           sha256: 7300222cb65eb1179ebde7d44462c01d3caf8b973af271e2988c695bb5adbf00
 
-      - name: Verify Proto installation
+      - name: Verify Proto installation (X64)
+        shell: bash
+        run: |
+          proto --version
+
+  setup-proto-arm64:
+    runs-on: ubuntu-24.04-arm
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Proto (ARM64)
+        uses: ./.github/actions/setup-proto
+        with:
+          version: 0.49.1
+          arch: ARM64
+          sha256: a50391b92e23634faef344a4832084e7c774fd2f51319e307bf5b76e04303bd8
+
+      - name: Verify Proto installation (ARM64)
         shell: bash
         run: |
           proto --version

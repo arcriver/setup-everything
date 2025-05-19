@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup-trivy:
+  setup-trivy-arm64:
     runs-on: ubuntu-latest
 
     permissions:
@@ -17,21 +17,37 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Trivy for ARM64
+      - name: Setup Trivy (ARM64)
         uses: ./.github/actions/setup-trivy
         with:
           version: 0.62.1
           arch: ARM64
           sha256: 50e13c5cdd3e3b610e0dc554e3bc58bc6f58eabe3e42a6b28961a23ac6eff0df
 
-      - name: Setup Trivy for X64
+      - name: Verify Trivy installation (ARM64)
+        shell: bash
+        run: |
+          trivy --version
+
+  setup-trivy-x64:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Trivy (X64)
         uses: ./.github/actions/setup-trivy
         with:
           version: 0.62.1
           arch: X64
           sha256: 7da92b2ca503d08eb15e717585fa4ffb95ef2c5dc4c554204882d7d26d386a6a
 
-      - name: Verify Trivy installation
+      - name: Verify Trivy installation (X64)
         shell: bash
         run: |
           trivy --version

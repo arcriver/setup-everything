@@ -6,35 +6,48 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup-hugo:
-    runs-on: ${{ matrix.os }}
+  setup-hugo-x64:
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: read
-
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            arch: X64
-            sha256: 294d995bd3bdcbb88d851fee61213322a53aa474125c0a6b09262e9c648cc83d
-          - os: macos-latest
-            arch: universal
-            sha256: e2801e5fa8fe2406fb63b2dbf554ef51f79635e1bf6e13fcd1259967554ecedb
 
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
 
-      - name: Setup Hugo
+      - name: Setup Hugo (X64)
         uses: ./.github/actions/setup-hugo
         with:
           version: 0.147.3
-          arch: ${{ matrix.arch }}
-          sha256: ${{ matrix.sha256 }}
+          arch: X64
+          sha256: 294d995bd3bdcbb88d851fee61213322a53aa474125c0a6b09262e9c648cc83d
 
-      - name: Verify Hugo installation
+      - name: Verify Hugo installation (X64)
+        shell: bash
+        run: |
+          hugo version
+
+  setup-hugo-universal:
+    runs-on: macos-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Hugo (Universal)
+        uses: ./.github/actions/setup-hugo
+        with:
+          version: 0.147.3
+          arch: universal
+          sha256: e2801e5fa8fe2406fb63b2dbf554ef51f79635e1bf6e13fcd1259967554ecedb
+
+      - name: Verify Hugo installation (Universal)
         shell: bash
         run: |
           hugo version
