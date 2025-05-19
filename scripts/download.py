@@ -9,6 +9,10 @@ import json
 import sys
 
 
+def log_error(message):
+    print(f"::error::{message.replace('\n', '%0A')}")
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Download a GitHub release artifact.")
     parser.add_argument(
@@ -93,22 +97,22 @@ def fetch_release_data(repo, release, github_token):
     }
     request = urllib.request.Request(api_url, headers=headers)
 
-    print(f"Fetching releases from {api_url}...")
+    print(f"Fetching releases from {api_url}")
 
     try:
         with urllib.request.urlopen(request) as response:
             if response.status != 200:
-                print(
+                log_error(
                     f"Failed to fetch release information: {response.status} {response.reason}"
                 )
                 sys.exit(1)
 
             return json.loads(response.read().decode())
     except HTTPError as e:
-        print(f"HTTP Error: {e.code} {e.reason}")
+        log_error(f"HTTP Error: {e.code} {e.reason}")
         sys.exit(1)
     except URLError as e:
-        print(f"URL Error: {e.reason}")
+        log_error(f"URL Error: {e.reason}")
         sys.exit(1)
 
 
@@ -116,7 +120,7 @@ def download_artifact(asset_url, output_file, github_token):
     headers = {"Authorization": f"token {github_token}"}
     request = urllib.request.Request(asset_url, headers=headers)
 
-    print(f"Downloading artifact from {asset_url}...")
+    print(f"Downloading artifact from {asset_url}")
 
     try:
         with (
@@ -125,10 +129,10 @@ def download_artifact(asset_url, output_file, github_token):
         ):
             out_file.write(response.read())
     except HTTPError as e:
-        print(f"HTTP Error: {e.code} {e.reason}")
+        log_error(f"HTTP Error: {e.code} {e.reason}")
         sys.exit(1)
     except URLError as e:
-        print(f"URL Error: {e.reason}")
+        log_error(f"URL Error: {e.reason}")
         sys.exit(1)
 
 
@@ -141,7 +145,7 @@ def verify_checksum(file_path, expected_sha256):
 
     calculated_sha256 = sha256_hash.hexdigest()
     if calculated_sha256 != expected_sha256:
-        print(
+        log_error(
             f"Checksum verification failed!\n"
             f"Expected: {expected_sha256.ljust(32)}\n"
             f"Got:      {calculated_sha256.ljust(32)}"
@@ -157,17 +161,16 @@ def main():
     arch = map_arch(args.arch, args.map_arch)
     os_name = map_os(args.os, args.map_os)
 
-    print(f"Mapped architecture: {arch}")
-    print(f"Mapped OS: {os_name}")
-
-    pattern = args.pattern.format(version=args.version, release=args.release, os=os_name, arch=arch)
+    pattern = args.pattern.format(
+        version=args.version, release=args.release, os=os_name, arch=arch
+    )
 
     release_data = fetch_release_data(args.repo, args.release, args.github_token)
     asset = next(
         (a for a in release_data.get("assets", []) if pattern in a["name"]), None
     )
     if not asset:
-        print(f"No matching asset found for pattern: {pattern}")
+        log_error(f"No matching asset found for pattern: {pattern}")
         sys.exit(1)
 
     asset_url = asset["browser_download_url"]
