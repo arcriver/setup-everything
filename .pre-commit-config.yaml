@@ -1,9 +1,10 @@
 repos:
-  - repo: local
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.10
+    hooks:
+      - id: ruff-check
+      - id: ruff-format
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.7.0
     hooks:
       - id: zizmor
-        name: Run Zizmor
-        entry: zizmor .
-        language: system
-        pass_filenames: false
-        types: [file]
