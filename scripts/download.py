@@ -10,7 +10,8 @@ import sys
 
 
 def log_error(message):
-    print(f"::error::{message.replace('\n', '%0A')}")
+    m = message.replace("\n", "%0A")
+    print(f"::error::{m}")
 
 
 def parse_arguments():
