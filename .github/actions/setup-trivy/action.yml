@@ -52,7 +52,7 @@ runs:
         _GH_TOKEN: "${{ inputs.github-token }}"
       run: |
         # Download the Trivy release asset
-        ${{ github.action_path }}/../../../scripts/download.py \
+        "${{ github.action_path }}/../../../scripts/download.py" \
           --arch "${_ARCH}" \
           --os "${_OS}" \
           --version "${_VERSION}" \
