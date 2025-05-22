@@ -7,11 +7,21 @@ import hashlib
 import urllib.request
 import json
 import sys
+import os
 
 
 def log_error(message):
     m = message.replace("\n", "%0A")
     print(f"::error::{m}")
+
+
+def set_github_output(name, value):
+    github_output = os.getenv("GITHUB_OUTPUT")
+    if not github_output:
+        return
+
+    with open(github_output, "a") as f:
+        f.write(f"{name}={value}\n")
 
 
 def parse_arguments():
@@ -30,6 +40,11 @@ def parse_arguments():
         "--version", required=True, help="Version number of the release (e.g., 0.62.1)"
     )
     parser.add_argument(
+        "--version",
+        required=True,
+        help="Version number of the release (e.g., 0.62.1)",
+    )
+    parser.add_argument(
         "--release",
         help="Release tag of the GitHub release (defaults to --version)",
     )
@@ -38,7 +53,8 @@ def parse_arguments():
         "--sha256", required=True, help="Expected SHA256 checksum of the artifact"
     )
     parser.add_argument(
-        "--github-token", required=True, help="GitHub token for authentication"
+        "--github-token",
+        help="GitHub token for authentication",
     )
     parser.add_argument(
         "--repo",
@@ -187,10 +203,13 @@ def main():
         log_error(f"No matching asset found for pattern: {pattern}")
         sys.exit(1)
 
+    filename = asset["name"]
     asset_url = asset["browser_download_url"]
 
-    download_artifact(asset_url, args.file, args.github_token)
-    verify_checksum(args.file, args.sha256)
+    set_github_output("filename", filename)
+
+    download_artifact(asset_url, filename, args.github_token)
+    verify_checksum(filename, args.sha256)
 
 
 if __name__ == "__main__":

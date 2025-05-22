@@ -33,15 +33,16 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache Hugo
-      id: cache
-      uses: actions/cache@v4
+    - name: Restore cache
+      id: restore
+      uses: actions/cache/restore@v4
       with:
-        path: artifact.tar.gz
+        path: "*"
         key: hugo-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
     - name: Download Hugo release asset
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.restore.outputs.cache-hit != 'true'
+      id: download
       shell: bash
       env:
         _ARCH: "${{ inputs.arch }}"
@@ -68,13 +69,21 @@ runs:
           --map-os Windows=windows \
           --map-os macOS=darwin
 
+    - name: Save cache
+      if: steps.restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ steps.download.outputs.filename }}
+        key: hugo-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
+
     - name: Install Hugo
       shell: bash
       env:
+        _FILENAME: "${{ steps.download.outputs.filename }}"
         _INSTALL_DIR: "${{ inputs.install-dir }}"
       run: |
         TEMP_DIR=$(mktemp -d)
-        tar -xf artifact.tar.gz -C "${TEMP_DIR}"
+        tar -xf ${_FILENAME} -C "${TEMP_DIR}"
 
         mkdir -p "${_INSTALL_DIR}"
         chmod +x "${TEMP_DIR}/hugo"
