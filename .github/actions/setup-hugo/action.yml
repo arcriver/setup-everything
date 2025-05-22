@@ -57,7 +57,6 @@ runs:
           --arch "${_ARCH}" \
           --os "${_OS}" \
           --version "${_VERSION}" \
-          --file "artifact.tar.gz" \
           --sha256 "${_SHA256}" \
           --github-token "${_GH_TOKEN}" \
           --repo "gohugoio/hugo" \
@@ -73,7 +72,7 @@ runs:
       if: steps.restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4
       with:
-        path: ${{ steps.download.outputs.filename }}
+        path: ./${{ steps.download.outputs.filename }}
         key: hugo-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
     - name: Install Hugo

@@ -37,9 +37,6 @@ def parse_arguments():
         help="Target operating system (e.g., Linux, Windows, macOS)",
     )
     parser.add_argument(
-        "--version", required=True, help="Version number of the release (e.g., 0.62.1)"
-    )
-    parser.add_argument(
         "--version",
         required=True,
         help="Version number of the release (e.g., 0.62.1)",
@@ -48,7 +45,6 @@ def parse_arguments():
         "--release",
         help="Release tag of the GitHub release (defaults to --version)",
     )
-    parser.add_argument("--file", required=True, help="Path to download the artifact")
     parser.add_argument(
         "--sha256", required=True, help="Expected SHA256 checksum of the artifact"
     )
