@@ -60,7 +60,7 @@ runs:
           --sha256 "${_SHA256}" \
           --github-token "${_GH_TOKEN}" \
           --repo "gohugoio/hugo" \
-          --pattern "hugo_{version}_{os}-{arch}.tar.gz" \
+          --pattern "hugo_{version}_{os}-{arch}.{ext}" \
           --map-arch X64=amd64 \
           --map-arch ARM64=arm64 \
           --map-arch ARM=arm \

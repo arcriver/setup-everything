@@ -80,13 +80,25 @@ def map_arch(arch, custom_arch_map):
 
 
 def map_os(os, custom_os_map):
-    os_map = {"Linux": "Linux", "Windows": "windows", "macOS": "macOS"}
+    os_map = {"Linux": "Linux", "Windows": "Windows", "macOS": "macOS"}
 
     for mapping in custom_os_map:
         source, target = mapping.split("=")
         os_map[source] = target
 
     return os_map.get(os, os)
+
+
+def map_ext(os):
+    if os == "Windows":
+        return "zip"
+    if os == "Linux":
+        return "tar.gz"
+    if os == "macOS":
+        return "tar.gz"
+
+    log_error(f"Unsupported OS: {os}")
+    sys.exit(1)
 
 
 def fetch_release_data(repo, release, github_token):
@@ -161,9 +173,10 @@ def main():
 
     arch = map_arch(args.arch, args.map_arch)
     os_name = map_os(args.os, args.map_os)
+    ext = map_ext(args.os)
 
     pattern = args.pattern.format(
-        version=args.version, release=args.release, os=os_name, arch=arch
+        version=args.version, release=args.release, os=os_name, arch=arch, ext=ext
     )
 
     release_data = fetch_release_data(args.repo, args.release, args.github_token)
