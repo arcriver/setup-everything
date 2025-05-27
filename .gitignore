@@ -2,3 +2,4 @@
 .env
 .ropeproject
 .ruff_cache
+__pycache__

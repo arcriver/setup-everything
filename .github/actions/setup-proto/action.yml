@@ -17,13 +17,13 @@ inputs:
     default: "${{ runner.os }}"
 
   sha256:
-    description: "SHA256 checksum to verify the downloaded archive"
+    description: "SHA256 checksum to verify the downloaded artifact"
     required: true
 
   install-dir:
     description: "Directory to install Proto"
     required: false
-    default: "/usr/local/bin"
+    default: "${{ runner.temp }}/bin"
 
   github-token:
     description: "GitHub token for authentication"
@@ -33,51 +33,40 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache Proto
-      id: cache
+    - name: Restore cache
+      id: restore
       uses: actions/cache@v4
       with:
-        path: artifact.tar.xz
+        path: proto_cli-${{ inputs.arch }}-${{ inputs.os }}.tar.xz
         key: proto-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
     - name: Download Proto release asset
-      if: steps.cache.outputs.cache-hit != 'true'
-      shell: bash
+      id: download
+      shell: python
       env:
-        _ARCH: "${{ inputs.arch }}"
-        _OS: "${{ inputs.os }}"
-        _VERSION: "${{ inputs.version }}"
-        _INSTALL_DIR: "${{ inputs.install-dir }}"
-        _SHA256: "${{ inputs.sha256 }}"
-        _GH_TOKEN: "${{ inputs.github-token }}"
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        OS: "${{ inputs.os }}"
+        ARCH: "${{ inputs.arch }}"
+        VERSION: "${{ inputs.version }}"
+        FILE: "proto_cli-${{ inputs.arch }}-${{ inputs.os }}.tar.xz"
+        SHA256: "${{ inputs.sha256 }}"
+        GITHUB_TOKEN: "${{ inputs.github-token }}"
       run: |
-        # Download the Proto release asset
-        "${{ github.action_path }}/../../../scripts/download.py" \
-          --arch "${_ARCH}" \
-          --os "${_OS}" \
-          --version "${_VERSION}" \
-          --file "artifact.tar.xz" \
-          --sha256 "${_SHA256}" \
-          --github-token "${_GH_TOKEN}" \
-          --repo "moonrepo/proto" \
-          --pattern "proto_cli-{arch}-{os}.tar.xz" \
-          --map-arch X64=x86_64 \
-          --map-arch ARM64=aarch64 \
-          --map-os Linux=unknown-linux-gnu \
-          --map-os macOS=apple-darwin \
-          --map-os Windows=pc-windows-msvc
+        from setup_everything.download.download import download_from_env
+
+        download_from_env("manifests/proto/manifest.json")
 
     - name: Install Proto
-      shell: bash
+      shell: python
       env:
-        _INSTALL_DIR: "${{ inputs.install-dir }}"
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        FILE: "proto_cli-${{ inputs.arch }}-${{ inputs.os }}.tar.xz"
+        NAME: ${{ steps.download.outputs.filename }}
+        INSTALL_DIR: "${{ inputs.install-dir }}"
       run: |
-        TEMP_DIR=$(mktemp -d)
-        tar --strip-components=1 -xf artifact.tar.xz -C "${TEMP_DIR}"
+        from setup_everything.install.install import install_from_env
 
-        mkdir -p "${_INSTALL_DIR}"
-        chmod +x "${TEMP_DIR}/proto"
-        mv -f "${TEMP_DIR}/proto" "${_INSTALL_DIR}/proto"
+        install_from_env("manifests/proto/manifest.json")
 
     - name: Verify installation
       shell: bash

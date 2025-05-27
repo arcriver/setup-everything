@@ -17,13 +17,13 @@ inputs:
     default: "${{ runner.os }}"
 
   sha256:
-    description: "SHA256 checksum to verify the downloaded tarball"
+    description: "SHA256 checksum to verify the downloaded artifact"
     required: true
 
   install-dir:
     description: "Directory to install Hugo"
     required: false
-    default: "/usr/local/bin"
+    default: "${{ runner.temp }}/bin"
 
   github-token:
     description: "GitHub token for authentication"
@@ -35,58 +35,38 @@ runs:
   steps:
     - name: Restore cache
       id: restore
-      uses: actions/cache/restore@v4
+      uses: actions/cache@v4
       with:
-        path: "*"
+        path: hugo_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}
         key: hugo-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
     - name: Download Hugo release asset
-      if: steps.restore.outputs.cache-hit != 'true'
       id: download
-      shell: bash
+      shell: python
       env:
-        _ARCH: "${{ inputs.arch }}"
-        _OS: "${{ inputs.os }}"
-        _VERSION: "${{ inputs.version }}"
-        _INSTALL_DIR: "${{ inputs.install-dir }}"
-        _SHA256: "${{ inputs.sha256 }}"
-        _GH_TOKEN: "${{ inputs.github-token }}"
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        OS: "${{ inputs.os }}"
+        ARCH: "${{ inputs.arch }}"
+        VERSION: "${{ inputs.version }}"
+        FILE: "hugo_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
+        SHA256: "${{ inputs.sha256 }}"
+        GITHUB_TOKEN: "${{ inputs.github-token }}"
       run: |
-        # Download the Hugo release asset
-        "${{ github.action_path }}/../../../scripts/download.py" \
-          --arch "${_ARCH}" \
-          --os "${_OS}" \
-          --version "${_VERSION}" \
-          --sha256 "${_SHA256}" \
-          --github-token "${_GH_TOKEN}" \
-          --repo "gohugoio/hugo" \
-          --pattern "hugo_{version}_{os}-{arch}.{ext}" \
-          --map-arch X64=amd64 \
-          --map-arch ARM64=arm64 \
-          --map-arch ARM=arm \
-          --map-os Linux=linux \
-          --map-os Windows=windows \
-          --map-os macOS=darwin
+        from setup_everything.download.download import download_from_env
 
-    - name: Save cache
-      if: steps.restore.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v4
-      with:
-        path: ./${{ steps.download.outputs.filename }}
-        key: hugo-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
+        download_from_env("manifests/hugo/manifest.json")
 
     - name: Install Hugo
-      shell: bash
+      shell: python
       env:
-        _FILENAME: "${{ steps.download.outputs.filename }}"
-        _INSTALL_DIR: "${{ inputs.install-dir }}"
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        FILE: "hugo_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
+        NAME: ${{ steps.download.outputs.filename }}
+        INSTALL_DIR: "${{ inputs.install-dir }}"
       run: |
-        TEMP_DIR=$(mktemp -d)
-        tar -xf ${_FILENAME} -C "${TEMP_DIR}"
+        from setup_everything.install.install import install_from_env
 
-        mkdir -p "${_INSTALL_DIR}"
-        chmod +x "${TEMP_DIR}/hugo"
-        mv -f "${TEMP_DIR}/hugo" "${_INSTALL_DIR}/hugo"
+        install_from_env("manifests/hugo/manifest.json")
 
     - name: Verify installation
       shell: bash

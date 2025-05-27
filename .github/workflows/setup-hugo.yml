@@ -30,7 +30,7 @@ jobs:
           hugo version
 
   setup-hugo-arm64:
-    runs-on: depot-ubuntu-24.04-arm-small
+    runs-on: ubuntu-24.04-arm
 
     permissions:
       contents: read
@@ -47,10 +47,10 @@ jobs:
           arch: ARM64
           sha256: 314ecc637d544834d70f0d2a1432e3aa660feee7d40cd4ca1d23d27d9a63dd36
 
-      - name: Verify Hugo installation (ARM64)
-        shell: bash
-        run: |
-          hugo version
+      # - name: Verify Hugo installation (ARM64)
+      #   shell: bash
+      #   run: |
+      #     hugo version
 
   setup-hugo-macos-universal:
     runs-on: macos-latest

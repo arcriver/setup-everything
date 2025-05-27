@@ -7,7 +7,7 @@ inputs:
     required: true
 
   arch:
-    description: "Target architecture (e.g. X64, ARM64, ARM, IA32)"
+    description: "Target architecture (e.g. X64, ARM64, ARM)"
     required: false
     default: "${{ runner.arch }}"
 
@@ -17,13 +17,13 @@ inputs:
     default: "${{ runner.os }}"
 
   sha256:
-    description: "SHA256 checksum to verify the downloaded tarball"
+    description: "SHA256 checksum to verify the downloaded artifact"
     required: true
 
   install-dir:
     description: "Directory to install Kubeconform"
     required: false
-    default: "/usr/local/bin"
+    default: "${{ runner.temp }}/bin"
 
   github-token:
     description: "GitHub token for authentication"
@@ -33,53 +33,40 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache Kubeconform
-      id: cache
+    - name: Restore cache
+      id: restore
       uses: actions/cache@v4
       with:
-        path: artifact.tar.gz
+        path: kubeconform-${{ inputs.os }}-${{ inputs.arch }}.tar.gz
         key: kubeconform-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
     - name: Download Kubeconform release asset
-      if: steps.cache.outputs.cache-hit != 'true'
-      shell: bash
+      id: download
+      shell: python
       env:
-        _ARCH: "${{ inputs.arch }}"
-        _OS: "${{ inputs.os }}"
-        _VERSION: "${{ inputs.version }}"
-        _INSTALL_DIR: "${{ inputs.install-dir }}"
-        _SHA256: "${{ inputs.sha256 }}"
-        _GH_TOKEN: "${{ inputs.github-token }}"
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        OS: "${{ inputs.os }}"
+        ARCH: "${{ inputs.arch }}"
+        VERSION: "${{ inputs.version }}"
+        FILE: "kubeconform-${{ inputs.os }}-${{ inputs.arch }}.tar.gz"
+        SHA256: "${{ inputs.sha256 }}"
+        GITHUB_TOKEN: "${{ inputs.github-token }}"
       run: |
-        # Download the Kubeconform release asset
-        "${{ github.action_path }}/../../../scripts/download.py" \
-          --arch "${_ARCH}" \
-          --os "${_OS}" \
-          --version "${_VERSION}" \
-          --file "artifact.tar.gz" \
-          --sha256 "${_SHA256}" \
-          --github-token "${_GH_TOKEN}" \
-          --repo "yannh/kubeconform" \
-          --pattern "kubeconform-{os}-{arch}.tar.gz" \
-          --map-arch X64=amd64 \
-          --map-arch IA32=386 \
-          --map-arch ARM=armv6 \
-          --map-arch ARM64=arm64 \
-          --map-os Linux=linux \
-          --map-os Windows=windows \
-          --map-os macOS=darwin
+        from setup_everything.download.download import download_from_env
+
+        download_from_env("manifests/kubeconform/manifest.json")
 
     - name: Install Kubeconform
-      shell: bash
+      shell: python
       env:
-        _INSTALL_DIR: "${{ inputs.install-dir }}"
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        FILE: "kubeconform-${{ inputs.os }}-${{ inputs.arch }}.tar.gz"
+        NAME: ${{ steps.download.outputs.filename }}
+        INSTALL_DIR: "${{ inputs.install-dir }}"
       run: |
-        TEMP_DIR=$(mktemp -d)
-        tar -xf artifact.tar.gz -C "${TEMP_DIR}"
+        from setup_everything.install.install import install_from_env
 
-        mkdir -p "${_INSTALL_DIR}"
-        chmod +x "${TEMP_DIR}/kubeconform"
-        mv -f "${TEMP_DIR}/kubeconform" "${_INSTALL_DIR}/kubeconform"
+        install_from_env("manifests/kubeconform/manifest.json")
 
     - name: Verify installation
       shell: bash
