@@ -1,6 +1,6 @@
 {
   "repo": "moonrepo/proto",
-  "pattern": "proto_cli-{arch}-{os}.tar.xz",
+  "pattern": "proto_cli-{arch}-{os}",
   "mappings": {
     "arch": { "X64": "x86_64", "ARM64": "aarch64", "ARM": "arm" },
     "os": {

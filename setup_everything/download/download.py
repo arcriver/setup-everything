@@ -22,6 +22,10 @@ class Downloader:
         }
 
     @staticmethod
+    def is_archive(file_path: str) -> bool:
+        return file_path.endswith((".zip", ".tar.gz", ".tar.xz"))
+
+    @staticmethod
     def map_arch(arch: str, custom_arch_map: Optional[Dict[str, str]] = None) -> str:
         arch_map = {}
 
@@ -39,16 +43,6 @@ class Downloader:
             os_map.update(custom_os_map)
 
         return os_map.get(os_name, os_name)
-
-    @staticmethod
-    def map_ext(os_name: str) -> str:
-        ext_map = {"Windows": "zip", "Linux": "tar.gz", "macOS": "tar.gz"}
-
-        if os_name not in ext_map:
-            log_error(f"Unsupported OS: {os_name}")
-            sys.exit(1)
-
-        return ext_map[os_name]
 
     def fetch_release_data(self, repo: str, release: str) -> Dict[str, Any]:
         api_url = f"https://api.github.com/repos/{repo}/releases/tags/{release}"
@@ -157,10 +151,9 @@ class Downloader:
 
         mapped_arch = self.map_arch(arch, arch_mappings)
         mapped_os = self.map_os(os_name, os_mappings)
-        ext = self.map_ext(os_name)
 
         formatted_pattern = pattern.format(
-            version=version, release=release, os=mapped_os, arch=mapped_arch, ext=ext
+            version=version, release=release, os=mapped_os, arch=mapped_arch
         )
 
         release_data = self.fetch_release_data(repo, release)
@@ -168,7 +161,7 @@ class Downloader:
             (
                 a
                 for a in release_data.get("assets", [])
-                if formatted_pattern in a["name"]
+                if formatted_pattern in a["name"] and self.is_archive(a["name"])
             ),
             None,
         )

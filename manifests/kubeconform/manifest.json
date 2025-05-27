@@ -1,6 +1,6 @@
 {
   "repo": "yannh/kubeconform",
-  "pattern": "kubeconform-{os}-{arch}.tar.gz",
+  "pattern": "kubeconform-{os}-{arch}",
   "mappings": {
     "arch": { "X64": "amd64", "ARM64": "arm64", "ARM": "arm" },
     "os": { "Linux": "linux", "Windows": "windows", "macOS": "darwin" }
