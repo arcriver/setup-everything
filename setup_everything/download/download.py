@@ -8,6 +8,7 @@ import urllib.request
 import json
 import sys
 import os
+import argparse
 
 from ..utils import log_error, log_notice, append_github_output, load_manifest
 
@@ -226,50 +227,45 @@ def download_from_env(manifest: str) -> str:
     )
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Download a GitHub release artifact.")
+    parser.add_argument(
+        "--arch",
+        required=True,
+        help="Target architecture (e.g., X64, ARM64, ARM, IA32)",
+    )
+    parser.add_argument(
+        "--os",
+        required=True,
+        help="Target operating system (e.g., Linux, Windows, macOS)",
+    )
+    parser.add_argument(
+        "--version",
+        required=True,
+        help="Version number of the release (e.g., 0.62.1)",
+    )
+    parser.add_argument(
+        "--release",
+        help="Release tag of the GitHub release (defaults to --version)",
+    )
+    parser.add_argument("--file", required=True, help="Path to download the artifact")
+    parser.add_argument(
+        "--sha256", required=True, help="Expected SHA256 checksum of the artifact"
+    )
+    parser.add_argument(
+        "--github-token",
+        help="GitHub token for authentication",
+    )
+    parser.add_argument(
+        "--manifest",
+        required=True,
+        help="Path of application manifest to use for downloading the artifact",
+    )
+
+    return parser.parse_args()
+
+
 def main():
-    import argparse
-
-    def parse_arguments():
-        parser = argparse.ArgumentParser(
-            description="Download a GitHub release artifact."
-        )
-        parser.add_argument(
-            "--arch",
-            required=True,
-            help="Target architecture (e.g., X64, ARM64, ARM, IA32)",
-        )
-        parser.add_argument(
-            "--os",
-            required=True,
-            help="Target operating system (e.g., Linux, Windows, macOS)",
-        )
-        parser.add_argument(
-            "--version",
-            required=True,
-            help="Version number of the release (e.g., 0.62.1)",
-        )
-        parser.add_argument(
-            "--release",
-            help="Release tag of the GitHub release (defaults to --version)",
-        )
-        parser.add_argument(
-            "--file", required=True, help="Path to download the artifact"
-        )
-        parser.add_argument(
-            "--sha256", required=True, help="Expected SHA256 checksum of the artifact"
-        )
-        parser.add_argument(
-            "--github-token",
-            help="GitHub token for authentication",
-        )
-        parser.add_argument(
-            "--manifest",
-            required=True,
-            help="Path of application manifest to use for downloading the artifact",
-        )
-
-        return parser.parse_args()
-
     args = parse_arguments()
 
     if all([args.arch, args.os, args.version, args.file, args.sha256]):

@@ -10,13 +10,12 @@ import os
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 
-from setup_everything.utils.common import append_github_path
-
-from ..utils import log_error, load_manifest
+from ..utils import log_error, load_manifest, append_github_path
 
 
 class Installer:
-    def get_extract_patterns(self, manifest: Dict[str, Any]) -> Optional[List[str]]:
+    @staticmethod
+    def get_extract_patterns(manifest: Dict[str, Any]) -> Optional[List[str]]:
         extract_patterns = manifest.get("extract_patterns")
 
         if not extract_patterns:
@@ -59,11 +58,9 @@ class Installer:
         install_dir = Path(install_dir)
         install_dir.mkdir(parents=True, exist_ok=True)
 
-        append_github_path(str(install_dir))
-
         extract_patterns = self.get_extract_patterns(manifest)
 
-        if name.suffix == ".zip":
+        if zipfile.is_zipfile(file_path):
             with tempfile.TemporaryDirectory() as temp_dir:
                 self.extract_zip(file_path, temp_dir, extract_patterns)
 
@@ -73,10 +70,7 @@ class Installer:
                         shutil.copy2(item, dest_path)
                         dest_path.chmod(0o755)
 
-        elif name.suffixes[-2:] == [".tar", ".gz"] or name.suffixes[-2:] == [
-            ".tar",
-            ".xz",
-        ]:
+        elif tarfile.is_tarfile(file_path):
             with tempfile.TemporaryDirectory() as temp_dir:
                 self.extract_tar(file_path, temp_dir, extract_patterns)
 
@@ -127,18 +121,21 @@ def install_from_env(manifest_path: str) -> None:
     manifest = load_manifest(manifest_path)
     installer.install_artifact(file_path, name, install_dir, manifest)
 
+    append_github_path(install_dir)
+
 
 def main():
     args = parse_arguments()
-
-    installer = Installer()
     manifest = load_manifest(args.manifest)
 
     if all([args.file, args.install_dir]):
+        installer = Installer()
         installer.install_artifact(args.file, args.name, args.install_dir, manifest)
         print(f"Successfully installed artifact to {args.install_dir}")
     else:
         install_from_env(args.manifest)
+
+    append_github_path(args.install_dir)
 
 
 if __name__ == "__main__":
