@@ -1,5 +1,5 @@
 bake:
-    docker buildx bake --load
+    docker buildx bake --load -f test/docker/docker-bake.hcl
 
 clear-cache:
     rm -rf ~/.cache/actcache
