@@ -3,7 +3,11 @@
   "pattern": "proto_cli-{arch}-{os}.tar.xz",
   "mappings": {
     "arch": { "X64": "x86_64", "ARM64": "aarch64", "ARM": "arm" },
-    "os": { "Linux": "unknown-linux-gnu", "Windows": "pc-windows-msvc", "macOS": "apple-darwin" }
+    "os": {
+      "Linux": "unknown-linux-gnu",
+      "Windows": "pc-windows-msvc",
+      "macOS": "apple-darwin"
+    }
   },
-  "extract_patterns": ["proto"]
+  "extract_patterns": ["proto", "proto.exe"]
 }

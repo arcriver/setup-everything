@@ -5,5 +5,5 @@
     "arch": { "X64": "64bit", "ARM64": "ARM64", "ARM": "ARM" },
     "os": { "Linux": "Linux", "Windows": "Windows", "macOS": "macOS" }
   },
-  "extract_patterns": ["trivy"]
+  "extract_patterns": ["trivy", "trivy.exe"]
 }

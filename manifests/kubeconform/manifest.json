@@ -5,5 +5,5 @@
     "arch": { "X64": "amd64", "ARM64": "arm64", "ARM": "arm" },
     "os": { "Linux": "linux", "Windows": "windows", "macOS": "darwin" }
   },
-  "extract_patterns": ["kubeconform"]
+  "extract_patterns": ["kubeconform", "kubeconform.exe"]
 }
