@@ -1,4 +1,5 @@
 {
+  "$schema": "../schema.json",
   "repo": "aquasecurity/trivy",
   "assets": {
     "Linux": {

@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Setup Everything Manifest",
+  "description": "Manifest schema for defining GitHub release assets and extraction patterns",
+  "type": "object",
+  "required": ["repo", "assets", "extract_patterns"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "repo": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$",
+      "description": "GitHub repository in format 'owner/name'"
+    },
+    "assets": {
+      "type": "object",
+      "description": "Platform-specific asset definitions",
+      "properties": {
+        "Linux": {
+          "$ref": "#/definitions/platformAssets"
+        },
+        "Windows": {
+          "$ref": "#/definitions/platformAssets"
+        },
+        "macOS": {
+          "$ref": "#/definitions/platformAssets"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "extract_patterns": {
+      "type": "array",
+      "description": "List of file patterns to extract from archives",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "platformAssets": {
+      "type": "object",
+      "description": "Architecture-specific asset filenames for a platform",
+      "properties": {
+        "X64": {
+          "type": "string",
+          "minLength": 1
+        },
+        "X86": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ARM64": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ARM": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    }
+  }
+}
