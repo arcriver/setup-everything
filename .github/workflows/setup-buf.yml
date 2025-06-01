@@ -1,0 +1,99 @@
+name: Setup Buf
+
+permissions: {}
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-buf-x64:
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Buf (X64)
+        uses: ./.github/actions/setup-buf
+        with:
+          version: 1.54.0
+          arch: X64
+          sha256: fa10faf16973f3861992cc2687b651350d70eafd467aea72cf0994556c2a0927
+
+      - name: Verify Buf installation (X64)
+        shell: bash
+        run: |
+          buf --version
+
+  # setup-buf-arm64:
+  #   runs-on: ubuntu-24.04-arm
+
+  #   permissions:
+  #     contents: read
+
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         persist-credentials: false
+
+  # - name: Setup Buf (X64)
+  #   uses: ./.github/actions/setup-buf
+  #   with:
+  #     version: 1.54.0
+  #     arch: X64
+  #     sha256: 294d995bd3bdcbb88d851fee61213322a53aa474125c0a6b09262e9c648cc83d
+
+  # - name: Verify Buf installation (X64)
+  #   shell: bash
+  #   run: |
+  #     buf --version
+
+  setup-buf-macos-arm64:
+    runs-on: macos-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Buf (X64)
+        uses: ./.github/actions/setup-buf
+        with:
+          version: 1.54.0
+          arch: ARM64
+          sha256: f01f32a690efab3ef22a1c821aebc0c4bec7ca63faddbf64408d7d614e9d7f92
+
+      - name: Verify Buf installation (X64)
+        shell: bash
+        run: |
+          buf --version
+
+  setup-buf-windows-x64:
+    runs-on: windows-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Buf (X64)
+        uses: ./.github/actions/setup-buf
+        with:
+          version: 1.54.0
+          arch: X64
+          sha256: 22c0b6d8e57e64c5d52328e04f0a40d892ef5b118b1900e3a1935b7cd58625c7
+
+      - name: Verify Buf installation (X64)
+        shell: bash
+        run: |
+          buf --version

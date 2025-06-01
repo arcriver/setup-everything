@@ -1,0 +1,19 @@
+{
+  "repo": "bufbuild/buf",
+  "assets": {
+    "Linux": {
+      "X64": "buf-Linux-x86_64.tar.gz",
+      "ARM64": "buf-Linux-aarch64.tar.gz",
+      "ARM": "buf-Linux-armv7.tar.gz"
+    },
+    "Windows": {
+      "X64": "buf-Windows-x86_64.zip",
+      "ARM64": "buf-Windows-arm64.zip"
+    },
+    "macOS": {
+      "X64": "buf-Darwin-x86_64.tar.gz",
+      "ARM64": "buf-Darwin-arm64.tar.gz"
+    }
+  },
+  "extract_patterns": ["buf", "buf.exe"]
+}

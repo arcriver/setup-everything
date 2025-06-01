@@ -1,0 +1,74 @@
+name: "Install Buf"
+description: "Installs a specific version of Buf"
+
+inputs:
+  version:
+    description: "Version of Buf to install"
+    required: true
+
+  arch:
+    description: "Target architecture (e.g. X64, ARM64, ARM)"
+    required: false
+    default: "${{ runner.arch }}"
+
+  os:
+    description: "Target operating system (e.g. Linux, Windows, macOS)"
+    required: false
+    default: "${{ runner.os }}"
+
+  sha256:
+    description: "SHA256 checksum to verify the downloaded artifact"
+    required: true
+
+  install-dir:
+    description: "Directory to install Buf"
+    required: false
+    default: "${{ runner.temp }}/bin"
+
+  github-token:
+    description: "GitHub token for authentication"
+    required: false
+    default: "${{ github.token }}"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Restore cache
+      id: restore
+      uses: actions/cache@v4
+      with:
+        path: buf_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}
+        key: buf-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
+
+    - name: Download Buf release asset
+      id: download
+      shell: python
+      env:
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        OS: "${{ inputs.os }}"
+        ARCH: "${{ inputs.arch }}"
+        VERSION: "${{ inputs.version }}"
+        FILE: "buf_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
+        SHA256: "${{ inputs.sha256 }}"
+        GITHUB_TOKEN: "${{ inputs.github-token }}"
+      run: |
+        from setup_everything.download.download import download_from_env
+
+        download_from_env("manifests/buf/manifest.json")
+
+    - name: Install Buf
+      shell: python
+      env:
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        FILE: "buf_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
+        NAME: ${{ steps.download.outputs.filename }}
+        INSTALL_DIR: "${{ inputs.install-dir }}"
+      run: |
+        from setup_everything.install.install import install_from_env
+
+        install_from_env("manifests/buf/manifest.json")
+
+    - name: Verify installation
+      shell: bash
+      run: |
+        command -v buf
