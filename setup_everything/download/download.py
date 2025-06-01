@@ -210,7 +210,7 @@ def parse_arguments():
     parser.add_argument(
         "--arch",
         required=True,
-        help="Target architecture (e.g., X64, ARM64, ARM, IA32)",
+        help="Target architecture (e.g., X64, X86, ARM64, ARM)",
     )
     parser.add_argument(
         "--os",
