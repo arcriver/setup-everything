@@ -1,9 +1,18 @@
 {
   "repo": "aquasecurity/trivy",
-  "pattern": "trivy_{version}_{os}-{arch}",
-  "mappings": {
-    "arch": { "X64": "64bit", "ARM64": "ARM64", "ARM": "ARM" },
-    "os": { "Linux": "Linux", "Windows": "Windows", "macOS": "macOS" }
+  "assets": {
+    "Linux": {
+      "X64": "trivy_{version}_Linux-64bit.tar.gz",
+      "ARM64": "trivy_{version}_Linux-ARM64.tar.gz",
+      "ARM": "trivy_{version}_Linux-ARM.tar.gz"
+    },
+    "Windows": {
+      "X64": "trivy_{version}_windows-64bit.zip"
+    },
+    "macOS": {
+      "X64": "trivy_{version}_macOS-64bit.tar.gz",
+      "ARM64": "trivy_{version}_macOS-ARM64.tar.gz"
+    }
   },
   "extract_patterns": ["trivy", "trivy.exe"]
 }

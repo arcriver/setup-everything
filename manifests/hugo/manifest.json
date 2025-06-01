@@ -1,9 +1,18 @@
 {
   "repo": "gohugoio/hugo",
-  "pattern": "hugo_{version}_{os}-{arch}",
-  "mappings": {
-    "arch": { "X64": "amd64", "ARM64": "arm64", "ARM": "arm" },
-    "os": { "Linux": "linux", "Windows": "windows", "macOS": "darwin" }
+  "assets": {
+    "Linux": {
+      "X64": "hugo_{version}_linux-amd64.tar.gz",
+      "ARM64": "hugo_{version}_linux-arm64.tar.gz",
+      "ARM": "hugo_{version}_linux-arm.tar.gz"
+    },
+    "Windows": {
+      "X64": "hugo_{version}_windows-amd64.zip",
+      "ARM64": "hugo_{version}_windows-arm64.zip"
+    },
+    "macOS": {
+      "Universal": "hugo_{version}_darwin-universal.tar.gz"
+    }
   },
   "extract_patterns": ["hugo", "hugo.exe"]
 }

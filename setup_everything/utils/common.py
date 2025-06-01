@@ -43,7 +43,7 @@ def append_github_path(path: str) -> None:
 
 
 def validate_manifest_schema(manifest: Dict[str, Any]) -> None:
-    required_fields = ["repo", "pattern"]
+    required_fields = ["repo", "assets"]
 
     for field in required_fields:
         if field not in manifest:
@@ -54,8 +54,8 @@ def validate_manifest_schema(manifest: Dict[str, Any]) -> None:
         log_error("Field 'repo' must be a string")
         sys.exit(1)
 
-    if not isinstance(manifest["pattern"], str):
-        log_error("Field 'pattern' must be a string")
+    if not isinstance(manifest["assets"], dict):
+        log_error("Field 'assets' must be a dictionary")
         sys.exit(1)
 
     if "mappings" in manifest and not isinstance(manifest["mappings"], dict):

@@ -49,7 +49,7 @@ class Installer:
                 if self.should_extract_file(member.name, patterns):
                     tar_ref.extract(member, temp_dir, filter="data")
 
-    def install_artifact(
+    def install_asset(
         self, file_path, name, install_dir, manifest: Dict[str, Any]
     ) -> None:
         file_path = Path(file_path)
@@ -88,16 +88,14 @@ class Installer:
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Install an artifact by extracting or moving it."
+        description="Install an asset by extracting or moving it."
     )
     parser.add_argument(
-        "--file", required=True, help="Path to the artifact file to install"
+        "--file", required=True, help="Path to the asset file to install"
     )
+    parser.add_argument("--name", required=True, help="Original filename of the asset")
     parser.add_argument(
-        "--name", required=True, help="Original filename of the artifact"
-    )
-    parser.add_argument(
-        "--install-dir", required=True, help="Directory to install the artifact"
+        "--install-dir", required=True, help="Directory to install the asset"
     )
     parser.add_argument(
         "--manifest",
@@ -119,7 +117,7 @@ def install_from_env(manifest_path: str) -> None:
 
     installer = Installer()
     manifest = load_manifest(manifest_path)
-    installer.install_artifact(file_path, name, install_dir, manifest)
+    installer.install_asset(file_path, name, install_dir, manifest)
 
     append_github_path(install_dir)
 
@@ -130,8 +128,8 @@ def main():
 
     if all([args.file, args.install_dir]):
         installer = Installer()
-        installer.install_artifact(args.file, args.name, args.install_dir, manifest)
-        print(f"Successfully installed artifact to {args.install_dir}")
+        installer.install_asset(args.file, args.name, args.install_dir, manifest)
+        print(f"Successfully installed asset to {args.install_dir}")
     else:
         install_from_env(args.manifest)
 

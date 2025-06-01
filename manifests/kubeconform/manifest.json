@@ -1,9 +1,19 @@
 {
   "repo": "yannh/kubeconform",
-  "pattern": "kubeconform-{os}-{arch}",
-  "mappings": {
-    "arch": { "X64": "amd64", "ARM64": "arm64", "ARM": "arm" },
-    "os": { "Linux": "linux", "Windows": "windows", "macOS": "darwin" }
+  "assets": {
+    "Linux": {
+      "X64": "kubeconform-linux-amd64.tar.gz",
+      "ARM64": "kubeconform-linux-arm64.tar.gz",
+      "ARM": "kubeconform-linux-armv6.tar.gz"
+    },
+    "Windows": {
+      "X64": "kubeconform-windows-amd64.zip",
+      "ARM64": "kubeconform-windows-arm64.zip"
+    },
+    "macOS": {
+      "X64": "kubeconform-darwin-amd64.tar.gz",
+      "ARM64": "kubeconform-darwin-arm64.tar.gz"
+    }
   },
   "extract_patterns": ["kubeconform", "kubeconform.exe"]
 }

@@ -16,34 +16,10 @@ from ..utils import log_error, log_notice, append_github_output, load_manifest
 class Downloader:
     def __init__(self, github_token: Optional[str] = None):
         self.github_token = github_token
-        self._default_os_map = {
-            "Linux": "Linux",
-            "Windows": "Windows",
-            "macOS": "macOS",
-        }
 
     @staticmethod
     def is_archive(file_path: str) -> bool:
         return file_path.endswith((".zip", ".tar.gz", ".tar.xz"))
-
-    @staticmethod
-    def map_arch(arch: str, custom_arch_map: Optional[Dict[str, str]] = None) -> str:
-        arch_map = {}
-
-        if custom_arch_map:
-            arch_map.update(custom_arch_map)
-
-        return arch_map.get(arch, arch)
-
-    def map_os(
-        self, os_name: str, custom_os_map: Optional[Dict[str, str]] = None
-    ) -> str:
-        os_map = self._default_os_map.copy()
-
-        if custom_os_map:
-            os_map.update(custom_os_map)
-
-        return os_map.get(os_name, os_name)
 
     def fetch_release_data(self, repo: str, release: str) -> Dict[str, Any]:
         api_url = f"https://api.github.com/repos/{repo}/releases/tags/{release}"
@@ -62,27 +38,27 @@ class Downloader:
         try:
             with urllib.request.urlopen(request) as response:
                 if response.status != 200:
-                    (
+                    log_error(
                         f"Failed to fetch release information: {response.status} {response.reason}"
                     )
                     sys.exit(1)
 
                 return json.loads(response.read().decode())
         except HTTPError as e:
-            (f"HTTP Error: {e.code} {e.reason}")
+            log_error(f"HTTP Error: {e.code} {e.reason}")
             sys.exit(1)
         except URLError as e:
-            (f"URL Error: {e.reason}")
+            log_error(f"URL Error: {e.reason}")
             sys.exit(1)
 
-    def download_artifact(self, asset_url: str, output_file: str) -> None:
+    def download_asset(self, asset_url: str, output_file: str) -> None:
         headers = {}
         if self.github_token:
             headers["Authorization"] = f"token {self.github_token}"
 
         request = urllib.request.Request(asset_url, headers=headers)
 
-        print(f"Downloading artifact from {asset_url}")
+        print(f"Downloading asset from {asset_url}")
 
         try:
             with (
@@ -91,10 +67,10 @@ class Downloader:
             ):
                 out_file.write(response.read())
         except HTTPError as e:
-            (f"HTTP Error: {e.code} {e.reason}")
+            log_error(f"HTTP Error: {e.code} {e.reason}")
             sys.exit(1)
         except URLError as e:
-            (f"URL Error: {e.reason}")
+            log_error(f"URL Error: {e.reason}")
             sys.exit(1)
 
     @staticmethod
@@ -139,41 +115,43 @@ class Downloader:
 
         repo = manifest_data.get("repo")
         if not repo:
-            ("Repository not specified in manifest")
+            log_error("Repository not specified in manifest")
             sys.exit(1)
 
-        pattern = manifest_data.get("pattern")
-        if not pattern:
-            ("Pattern not specified in manifest")
+        assets = manifest_data.get("assets")
+        if not assets:
+            log_error("Assets not specified in manifest")
             sys.exit(1)
 
-        arch_mappings = manifest_data.get("mappings", {}).get("arch", {})
-        os_mappings = manifest_data.get("mappings", {}).get("os", {})
+        os_assets = assets.get(os_name)
+        if not os_assets:
+            log_error(f"No assets found for OS: {os_name}")
+            sys.exit(1)
 
-        mapped_arch = self.map_arch(arch, arch_mappings)
-        mapped_os = self.map_os(os_name, os_mappings)
+        asset_url_template = os_assets.get(arch)
+        if not asset_url_template:
+            log_error(f"No asset URL found for {os_name}-{arch}")
+            sys.exit(1)
 
-        formatted_pattern = pattern.format(
-            version=version, release=release, os=mapped_os, arch=mapped_arch
-        )
+        expected_filename = asset_url_template.format(version=version, release=release)
 
         release_data = self.fetch_release_data(repo, release)
         asset = next(
             (
                 a
                 for a in release_data.get("assets", [])
-                if formatted_pattern in a["name"] and self.is_archive(a["name"])
+                if a["name"] == expected_filename
             ),
             None,
         )
 
         if not asset:
-            (f"No matching asset found for pattern: {formatted_pattern}")
+            log_error(f"No matching asset found for filename: {expected_filename}")
             sys.exit(1)
 
         return asset
 
-    def download_release_artifact(
+    def download_release_asset(
         self,
         arch: str,
         os_name: str,
@@ -195,7 +173,7 @@ class Downloader:
         if os.path.exists(output_file):
             log_notice(f"File {output_file} already exists. Skipping download.")
         else:
-            self.download_artifact(asset_url, output_file)
+            self.download_asset(asset_url, output_file)
 
         self.verify_checksum(output_file, expected_sha256)
 
@@ -216,7 +194,7 @@ def download_from_env(manifest: str) -> str:
         sys.exit(1)
 
     downloader = Downloader(github_token)
-    return downloader.download_release_artifact(
+    return downloader.download_release_asset(
         arch=arch,
         os_name=os_name,
         version=version,
@@ -228,7 +206,7 @@ def download_from_env(manifest: str) -> str:
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Download a GitHub release artifact.")
+    parser = argparse.ArgumentParser(description="Download a GitHub release asset.")
     parser.add_argument(
         "--arch",
         required=True,
@@ -248,9 +226,9 @@ def parse_arguments():
         "--release",
         help="Release tag of the GitHub release (defaults to --version)",
     )
-    parser.add_argument("--file", required=True, help="Path to download the artifact")
+    parser.add_argument("--file", required=True, help="Path to download the asset")
     parser.add_argument(
-        "--sha256", required=True, help="Expected SHA256 checksum of the artifact"
+        "--sha256", required=True, help="Expected SHA256 checksum of the asset"
     )
     parser.add_argument(
         "--github-token",
@@ -259,7 +237,7 @@ def parse_arguments():
     parser.add_argument(
         "--manifest",
         required=True,
-        help="Path of application manifest to use for downloading the artifact",
+        help="Path of application manifest to use for downloading the asset",
     )
 
     return parser.parse_args()
@@ -270,7 +248,7 @@ def main():
 
     if all([args.arch, args.os, args.version, args.file, args.sha256]):
         downloader = Downloader(args.github_token)
-        downloader.download_release_artifact(
+        downloader.download_release_asset(
             arch=args.arch,
             os_name=args.os,
             version=args.version,

@@ -1,12 +1,16 @@
 {
   "repo": "moonrepo/proto",
-  "pattern": "proto_cli-{arch}-{os}",
-  "mappings": {
-    "arch": { "X64": "x86_64", "ARM64": "aarch64", "ARM": "arm" },
-    "os": {
-      "Linux": "unknown-linux-gnu",
-      "Windows": "pc-windows-msvc",
-      "macOS": "apple-darwin"
+  "assets": {
+    "Linux": {
+      "X64": "proto_cli-x86_64-unknown-linux-gnu.tar.xz",
+      "ARM64": "proto_cli-aarch64-unknown-linux-gnu.tar.xz"
+    },
+    "Windows": {
+      "X64": "proto_cli-x86_64-pc-windows-msvc.zip"
+    },
+    "macOS": {
+      "X64": "proto_cli-x86_64-apple-darwin.tar.xz",
+      "ARM64": "proto_cli-aarch64-apple-darwin.tar.xz"
     }
   },
   "extract_patterns": ["proto", "proto.exe"]
