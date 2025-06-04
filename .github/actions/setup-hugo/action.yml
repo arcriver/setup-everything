@@ -51,10 +51,11 @@ runs:
         FILE: "hugo_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
         SHA256: "${{ inputs.sha256 }}"
         GITHUB_TOKEN: "${{ inputs.github-token }}"
+        MANIFEST: "manifests/hugo/manifest.json"
       run: |
         from setup_everything.download.download import download_from_env
 
-        download_from_env("manifests/hugo/manifest.json")
+        download_from_env("${{ env.MANIFEST }}")
 
     - name: Install Hugo
       shell: python
@@ -63,10 +64,11 @@ runs:
         FILE: "hugo_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
         NAME: ${{ steps.download.outputs.filename }}
         INSTALL_DIR: "${{ inputs.install-dir }}"
+        MANIFEST: "manifests/hugo/manifest.json"
       run: |
         from setup_everything.install.install import install_from_env
 
-        install_from_env("manifests/hugo/manifest.json")
+        install_from_env("${{ env.MANIFEST }}")
 
     - name: Verify installation
       shell: bash
