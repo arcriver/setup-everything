@@ -1,0 +1,76 @@
+name: "Install GoReleaser"
+description: "Installs a specific version of GoReleaser"
+
+inputs:
+  version:
+    description: "Version of GoReleaser to install"
+    required: true
+
+  arch:
+    description: "Target architecture (e.g. X64, X86, ARM64, ARM)"
+    required: false
+    default: "${{ runner.arch }}"
+
+  os:
+    description: "Target operating system (e.g. Linux, Windows, macOS)"
+    required: false
+    default: "${{ runner.os }}"
+
+  sha256:
+    description: "SHA256 checksum to verify the downloaded artifact"
+    required: true
+
+  install-dir:
+    description: "Directory to install GoReleaser"
+    required: false
+    default: "${{ runner.temp }}/bin"
+
+  github-token:
+    description: "GitHub token for authentication"
+    required: false
+    default: "${{ github.token }}"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Restore cache
+      id: restore
+      uses: actions/cache@v4
+      with:
+        path: goreleaser_${{ inputs.os }}_${{ inputs.arch }}.*
+        key: goreleaser-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
+
+    - name: Download GoReleaser release asset
+      id: download
+      shell: python
+      env:
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        OS: "${{ inputs.os }}"
+        ARCH: "${{ inputs.arch }}"
+        VERSION: "${{ inputs.version }}"
+        FILE: "goreleaser_${{ inputs.os }}_${{ inputs.arch }}${{ inputs.os == 'Windows' && '.zip' || '.tar.gz' }}"
+        SHA256: "${{ inputs.sha256 }}"
+        GITHUB_TOKEN: "${{ inputs.github-token }}"
+        MANIFEST: "manifests/goreleaser/manifest.json"
+      run: |
+        from setup_everything.download.download import download_from_env
+
+        download_from_env("${{ env.MANIFEST }}")
+
+    - name: Install GoReleaser
+      shell: python
+      env:
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        FILE: "goreleaser_${{ inputs.os }}_${{ inputs.arch }}${{ inputs.os == 'Windows' && '.zip' || '.tar.gz' }}"
+        NAME: ${{ steps.download.outputs.filename }}
+        INSTALL_DIR: "${{ inputs.install-dir }}"
+        MANIFEST: "manifests/goreleaser/manifest.json"
+      run: |
+        from setup_everything.install.install import install_from_env
+
+        install_from_env("${{ env.MANIFEST }}")
+
+    - name: Verify installation
+      shell: bash
+      run: |
+        command -v goreleaser

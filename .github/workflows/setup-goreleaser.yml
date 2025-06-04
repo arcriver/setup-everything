@@ -1,0 +1,99 @@
+name: Setup GoReleaser
+
+permissions: {}
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-goreleaser-linux-x64:
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup GoReleaser (X64)
+        uses: ./.github/actions/setup-goreleaser
+        with:
+          version: 2.9.0
+          arch: X64
+          sha256: a066fcd713684abed0d750d7559f1a5d794fa2faa8e8f1ad2eecec8c373668a7
+
+      - name: Verify GoReleaser installation (X64)
+        shell: bash
+        run: |
+          goreleaser --version
+
+  setup-goreleaser-linux-arm64:
+    runs-on: ubuntu-24.04-arm
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup GoReleaser (ARM64)
+        uses: ./.github/actions/setup-goreleaser
+        with:
+          version: 2.9.0
+          arch: ARM64
+          sha256: 574e83f5f0fc97803ff734c9342f8fd446d77e5e7ccac53debf09b4a8dbded80
+
+      - name: Verify GoReleaser installation (ARM64)
+        shell: bash
+        run: |
+          goreleaser --version
+
+  setup-goreleaser-macos:
+    runs-on: macos-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup GoReleaser (Universal)
+        uses: ./.github/actions/setup-goreleaser
+        with:
+          version: 2.9.0
+          arch: ARM64
+          sha256: 82953b65c4b64e73b1077827663d97bf8e32592b4fc2cdb55c738bd484260a47
+
+      - name: Verify GoReleaser installation (Universal)
+        shell: bash
+        run: |
+          goreleaser --version
+
+  setup-goreleaser-windows:
+    runs-on: windows-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup GoReleaser (X64)
+        uses: ./.github/actions/setup-goreleaser
+        with:
+          version: 2.9.0
+          arch: X64
+          sha256: f56e85f8fd52875102dfc2b01dc07fc174486caebbac7e3aa9f29b4f0057d495
+
+      - name: Verify GoReleaser installation (X64)
+        shell: bash
+        run: |
+          goreleaser --version

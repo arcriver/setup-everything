@@ -1,0 +1,22 @@
+{
+  "$schema": "../schema.json",
+  "repo": "goreleaser/goreleaser",
+  "assets": {
+    "Linux": {
+      "X64": "goreleaser_Linux_x86_64.tar.gz",
+      "ARM64": "goreleaser_Linux_arm64.tar.gz",
+      "ARM": "goreleaser_Linux_armv7.tar.gz",
+      "X86": "goreleaser_Linux_i386.tar.gz"
+    },
+    "Windows": {
+      "X64": "goreleaser_Windows_x86_64.zip",
+      "ARM64": "goreleaser_Windows_arm64.zip",
+      "X86": "goreleaser_Windows_i386.zip"
+    },
+    "macOS": {
+      "X64": "goreleaser_Darwin_all.tar.gz",
+      "ARM64": "goreleaser_Darwin_all.tar.gz"
+    }
+  },
+  "extract_patterns": ["goreleaser", "goreleaser.exe"]
+}
