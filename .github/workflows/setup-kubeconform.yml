@@ -6,7 +6,30 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup-kubeconform-arm64:
+  setup-kubeconform-linux-x64:
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Kubeconform (X64)
+        uses: ./.github/actions/setup-kubeconform
+        with:
+          version: 0.7.0
+          arch: X64
+          sha256: c31518ddd122663b3f3aa874cfe8178cb0988de944f29c74a0b9260920d115d3
+
+      - name: Verify Kubeconform installation (X64)
+        shell: bash
+        run: |
+          kubeconform -v
+
+  setup-kubeconform-linux-arm64:
     runs-on: ubuntu-24.04-arm
 
     permissions:
@@ -29,8 +52,31 @@ jobs:
         run: |
           kubeconform -v
 
-  setup-kubeconform-x64:
-    runs-on: ubuntu-24.04
+  setup-kubeconform-macos:
+    runs-on: macos-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Kubeconform (ARM64)
+        uses: ./.github/actions/setup-kubeconform
+        with:
+          version: 0.7.0
+          arch: ARM64
+          sha256: b5d32b2cb77f9c781c976b20a85e2d0bc8f9184d5d1cfe665a2f31a19f99eeb9
+
+      - name: Verify Kubeconform installation (ARM64)
+        shell: bash
+        run: |
+          kubeconform -v
+
+  setup-kubeconform-windows:
+    runs-on: windows-latest
 
     permissions:
       contents: read
@@ -45,7 +91,7 @@ jobs:
         with:
           version: 0.7.0
           arch: X64
-          sha256: c31518ddd122663b3f3aa874cfe8178cb0988de944f29c74a0b9260920d115d3
+          sha256: 9cb75551d81c909c2241ab383ced2be68363b5bfb15fd989badcc5a63bea5d7e
 
       - name: Verify Kubeconform installation (X64)
         shell: bash

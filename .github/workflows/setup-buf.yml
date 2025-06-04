@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup-buf-x64:
+  setup-buf-linux-x64:
     runs-on: ubuntu-24.04
 
     permissions:
@@ -29,30 +29,30 @@ jobs:
         run: |
           buf --version
 
-  # setup-buf-arm64:
-  #   runs-on: ubuntu-24.04-arm
+  setup-buf-linux-arm64:
+    runs-on: ubuntu-24.04-arm
 
-  #   permissions:
-  #     contents: read
+    permissions:
+      contents: read
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         persist-credentials: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
-  # - name: Setup Buf (X64)
-  #   uses: ./.github/actions/setup-buf
-  #   with:
-  #     version: 1.54.0
-  #     arch: X64
-  #     sha256: 294d995bd3bdcbb88d851fee61213322a53aa474125c0a6b09262e9c648cc83d
+      - name: Setup Buf (ARM64)
+        uses: ./.github/actions/setup-buf
+        with:
+          version: 1.54.0
+          arch: ARM64
+          sha256: 285c9925f61238b9f4160f9ec2e7999fa9146c9d48a0d2b2ec5b7cda885a9c17
 
-  # - name: Verify Buf installation (X64)
-  #   shell: bash
-  #   run: |
-  #     buf --version
+      - name: Verify Buf installation (ARM64)
+        shell: bash
+        run: |
+          buf --version
 
-  setup-buf-macos-arm64:
+  setup-buf-macos:
     runs-on: macos-latest
 
     permissions:
@@ -63,19 +63,19 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Buf (X64)
+      - name: Setup Buf (ARM64)
         uses: ./.github/actions/setup-buf
         with:
           version: 1.54.0
           arch: ARM64
           sha256: f01f32a690efab3ef22a1c821aebc0c4bec7ca63faddbf64408d7d614e9d7f92
 
-      - name: Verify Buf installation (X64)
+      - name: Verify Buf installation (ARM64)
         shell: bash
         run: |
           buf --version
 
-  setup-buf-windows-x64:
+  setup-buf-windows:
     runs-on: windows-latest
 
     permissions:

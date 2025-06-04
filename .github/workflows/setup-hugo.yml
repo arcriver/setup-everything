@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup-hugo-x64:
+  setup-hugo-linux-x64:
     runs-on: ubuntu-24.04
 
     permissions:
@@ -29,30 +29,30 @@ jobs:
         run: |
           hugo version
 
-  # setup-hugo-arm64:
-  #   runs-on: ubuntu-24.04-arm
+  setup-hugo-linux-arm64:
+    runs-on: ubuntu-24.04-arm
 
-  #   permissions:
-  #     contents: read
+    permissions:
+      contents: read
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         persist-credentials: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
-  #     - name: Setup Hugo (ARM64)
-  #       uses: ./.github/actions/setup-hugo
-  #       with:
-  #         version: 0.147.3
-  #         arch: ARM64
-  #         sha256: 314ecc637d544834d70f0d2a1432e3aa660feee7d40cd4ca1d23d27d9a63dd36
+      - name: Setup Hugo (ARM64)
+        uses: ./.github/actions/setup-hugo
+        with:
+          version: 0.147.3
+          arch: ARM64
+          sha256: 314ecc637d544834d70f0d2a1432e3aa660feee7d40cd4ca1d23d27d9a63dd36
 
-  #     - name: Verify Hugo installation (ARM64)
-  #       shell: bash
-  #       run: |
-  #         hugo version
+      - name: Verify Hugo installation (ARM64)
+        shell: bash
+        run: |
+          hugo version
 
-  setup-hugo-macos-universal:
+  setup-hugo-macos:
     runs-on: macos-latest
 
     permissions:
@@ -67,7 +67,7 @@ jobs:
         uses: ./.github/actions/setup-hugo
         with:
           version: 0.147.3
-          arch: universal
+          arch: ARM64
           sha256: e2801e5fa8fe2406fb63b2dbf554ef51f79635e1bf6e13fcd1259967554ecedb
 
       - name: Verify Hugo installation (Universal)
@@ -75,7 +75,7 @@ jobs:
         run: |
           hugo version
 
-  setup-hugo-windows-x64:
+  setup-hugo-windows:
     runs-on: windows-latest
 
     permissions:
