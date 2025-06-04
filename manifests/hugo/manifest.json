@@ -12,7 +12,8 @@
       "ARM64": "hugo_{version}_windows-arm64.zip"
     },
     "macOS": {
-      "Universal": "hugo_{version}_darwin-universal.tar.gz"
+      "X64": "hugo_{version}_darwin-universal.tar.gz",
+      "ARM64": "hugo_{version}_darwin-universal.tar.gz"
     }
   },
   "extract_patterns": ["hugo", "hugo.exe"]
