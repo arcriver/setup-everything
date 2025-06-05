@@ -1,13 +1,13 @@
-name: "Install Trivy"
-description: "Installs a specific version of Trivy"
+name: "Install Proto"
+description: "Installs a specific version of Proto"
 
 inputs:
   version:
-    description: "Version of Trivy to install"
+    description: "Version of Proto to install"
     required: true
 
   arch:
-    description: "Target architecture (e.g. X64, X86, ARM64, ARM)"
+    description: "Target architecture (e.g. ARM, ARM64, X64)"
     required: false
     default: "${{ runner.arch }}"
 
@@ -21,7 +21,7 @@ inputs:
     required: true
 
   install-dir:
-    description: "Directory to install Trivy"
+    description: "Directory to install Proto"
     required: false
     default: "${{ runner.temp }}/bin"
 
@@ -37,10 +37,10 @@ runs:
       id: restore
       uses: actions/cache@v4
       with:
-        path: trivy_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}.tar.gz
+        path: trivy_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}
         key: trivy-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
-    - name: Download Trivy release asset
+    - name: Download Proto release asset
       id: download
       shell: python
       env:
@@ -48,7 +48,7 @@ runs:
         OS: "${{ inputs.os }}"
         ARCH: "${{ inputs.arch }}"
         VERSION: "${{ inputs.version }}"
-        FILE: "trivy_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}.tar.gz"
+        FILE: "trivy_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
         SHA256: "${{ inputs.sha256 }}"
         GITHUB_TOKEN: "${{ inputs.github-token }}"
         MANIFEST: "manifests/trivy/manifest.json"
@@ -57,11 +57,11 @@ runs:
 
         download_from_env("${{ env.MANIFEST }}")
 
-    - name: Install Trivy
+    - name: Install Proto
       shell: python
       env:
         PYTHONPATH: "${{ github.action_path }}/../../.."
-        FILE: "trivy_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}.tar.gz"
+        FILE: "trivy_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
         NAME: ${{ steps.download.outputs.filename }}
         INSTALL_DIR: "${{ inputs.install-dir }}"
         MANIFEST: "manifests/trivy/manifest.json"
@@ -73,4 +73,4 @@ runs:
     - name: Verify installation
       shell: bash
       run: |
-        command -v trivy
+        command -v proto

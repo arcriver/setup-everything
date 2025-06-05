@@ -7,7 +7,7 @@ inputs:
     required: true
 
   arch:
-    description: "Target architecture (e.g. X64, X86, ARM64, ARM)"
+    description: "Target architecture (e.g. ARM, ARM64, X64)"
     required: false
     default: "${{ runner.arch }}"
 
@@ -37,7 +37,7 @@ runs:
       id: restore
       uses: actions/cache@v4
       with:
-        path: kubeconform-${{ inputs.os }}-${{ inputs.arch }}.tar.gz
+        path: kubeconform_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}
         key: kubeconform-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
     - name: Download Kubeconform release asset
@@ -48,7 +48,7 @@ runs:
         OS: "${{ inputs.os }}"
         ARCH: "${{ inputs.arch }}"
         VERSION: "${{ inputs.version }}"
-        FILE: "kubeconform-${{ inputs.os }}-${{ inputs.arch }}.tar.gz"
+        FILE: "kubeconform_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
         SHA256: "${{ inputs.sha256 }}"
         GITHUB_TOKEN: "${{ inputs.github-token }}"
         MANIFEST: "manifests/kubeconform/manifest.json"
@@ -61,7 +61,7 @@ runs:
       shell: python
       env:
         PYTHONPATH: "${{ github.action_path }}/../../.."
-        FILE: "kubeconform-${{ inputs.os }}-${{ inputs.arch }}.tar.gz"
+        FILE: "kubeconform_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
         NAME: ${{ steps.download.outputs.filename }}
         INSTALL_DIR: "${{ inputs.install-dir }}"
         MANIFEST: "manifests/kubeconform/manifest.json"

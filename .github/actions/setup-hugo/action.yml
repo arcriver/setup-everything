@@ -7,7 +7,7 @@ inputs:
     required: true
 
   arch:
-    description: "Target architecture (e.g. X64, X86, ARM64, ARM)"
+    description: "Target architecture (e.g. ARM, ARM64, X64)"
     required: false
     default: "${{ runner.arch }}"
 

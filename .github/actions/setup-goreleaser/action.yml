@@ -1,13 +1,13 @@
-name: "Install GoReleaser"
-description: "Installs a specific version of GoReleaser"
+name: "Install Goreleaser"
+description: "Installs a specific version of Goreleaser"
 
 inputs:
   version:
-    description: "Version of GoReleaser to install"
+    description: "Version of Goreleaser to install"
     required: true
 
   arch:
-    description: "Target architecture (e.g. X64, X86, ARM64, ARM)"
+    description: "Target architecture (e.g. ARM, ARM64, X64, X86)"
     required: false
     default: "${{ runner.arch }}"
 
@@ -21,7 +21,7 @@ inputs:
     required: true
 
   install-dir:
-    description: "Directory to install GoReleaser"
+    description: "Directory to install Goreleaser"
     required: false
     default: "${{ runner.temp }}/bin"
 
@@ -37,10 +37,10 @@ runs:
       id: restore
       uses: actions/cache@v4
       with:
-        path: goreleaser_${{ inputs.os }}_${{ inputs.arch }}
+        path: goreleaser_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}
         key: goreleaser-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
-    - name: Download GoReleaser release asset
+    - name: Download Goreleaser release asset
       id: download
       shell: python
       env:
@@ -48,7 +48,7 @@ runs:
         OS: "${{ inputs.os }}"
         ARCH: "${{ inputs.arch }}"
         VERSION: "${{ inputs.version }}"
-        FILE: "goreleaser_${{ inputs.os }}_${{ inputs.arch }}"
+        FILE: "goreleaser_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
         SHA256: "${{ inputs.sha256 }}"
         GITHUB_TOKEN: "${{ inputs.github-token }}"
         MANIFEST: "manifests/goreleaser/manifest.json"
@@ -57,11 +57,11 @@ runs:
 
         download_from_env("${{ env.MANIFEST }}")
 
-    - name: Install GoReleaser
+    - name: Install Goreleaser
       shell: python
       env:
         PYTHONPATH: "${{ github.action_path }}/../../.."
-        FILE: "goreleaser_${{ inputs.os }}_${{ inputs.arch }}"
+        FILE: "goreleaser_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
         NAME: ${{ steps.download.outputs.filename }}
         INSTALL_DIR: "${{ inputs.install-dir }}"
         MANIFEST: "manifests/goreleaser/manifest.json"
