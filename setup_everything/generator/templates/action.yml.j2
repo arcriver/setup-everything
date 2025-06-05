@@ -1,0 +1,76 @@
+name: "Install {% name | title_case %}"
+description: "Installs a specific version of {% name | title_case %}"
+
+inputs:
+  version:
+    description: "Version of {% name | title_case %} to install"
+    required: true
+
+  arch:
+    description: "Target architecture (e.g. {%% for arch in architectures %%}{% arch %}{%% if not loop.last %%}, {%% endif %%}{%% endfor %%})"
+    required: false
+    default: "${{ runner.arch }}"
+
+  os:
+    description: "Target operating system (e.g. {%% for platform in platforms %%}{% platform %}{%% if not loop.last %%}, {%% endif %%}{%% endfor %%})"
+    required: false
+    default: "${{ runner.os }}"
+
+  sha256:
+    description: "SHA256 checksum to verify the downloaded artifact"
+    required: true
+
+  install-dir:
+    description: "Directory to install {% name | title_case %}"
+    required: false
+    default: "${{ runner.temp }}/bin"
+
+  github-token:
+    description: "GitHub token for authentication"
+    required: false
+    default: "${{ github.token }}"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Restore cache
+      id: restore
+      uses: actions/cache@v4
+      with:
+        path: {% tool_name %}_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}
+        key: {% tool_name %}-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
+
+    - name: Download {% name | title_case %} release asset
+      id: download
+      shell: python
+      env:
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        OS: "${{ inputs.os }}"
+        ARCH: "${{ inputs.arch }}"
+        VERSION: "${{ inputs.version }}"
+        FILE: "{% tool_name %}_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
+        SHA256: "${{ inputs.sha256 }}"
+        GITHUB_TOKEN: "${{ inputs.github-token }}"
+        MANIFEST: "manifests/{% tool_name %}/manifest.json"
+      run: |
+        from setup_everything.download.download import download_from_env
+
+        download_from_env("${{ env.MANIFEST }}")
+
+    - name: Install {% name | title_case %}
+      shell: python
+      env:
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        FILE: "{% tool_name %}_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
+        NAME: ${{ steps.download.outputs.filename }}
+        INSTALL_DIR: "${{ inputs.install-dir }}"
+        MANIFEST: "manifests/{% tool_name %}/manifest.json"
+      run: |
+        from setup_everything.install.install import install_from_env
+
+        install_from_env("${{ env.MANIFEST }}")
+
+    - name: Verify installation
+      shell: bash
+      run: |
+        command -v {% name %}
