@@ -1,5 +1,6 @@
 {
   "$schema": "../schema.json",
+  "name": "buf",
   "repo": "bufbuild/buf",
   "assets": {
     "Linux": {

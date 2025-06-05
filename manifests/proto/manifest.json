@@ -1,5 +1,6 @@
 {
   "$schema": "../schema.json",
+  "name": "proto",
   "repo": "moonrepo/proto",
   "assets": {
     "Linux": {

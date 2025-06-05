@@ -1,5 +1,6 @@
 {
   "$schema": "../schema.json",
+  "name": "goreleaser",
   "repo": "goreleaser/goreleaser",
   "assets": {
     "Linux": {

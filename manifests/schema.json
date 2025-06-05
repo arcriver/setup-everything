@@ -3,11 +3,15 @@
   "title": "Setup Everything Manifest",
   "description": "Manifest schema for defining GitHub release assets and extraction patterns",
   "type": "object",
-  "required": ["repo", "assets", "extract_patterns"],
+  "required": ["name", "repo", "assets", "extract_patterns"],
   "properties": {
     "$schema": {
       "type": "string",
       "description": "JSON Schema reference"
+    },
+    "name": {
+      "type": "string",
+      "description": "Optional name for the tool, used for display purposes"
     },
     "repo": {
       "type": "string",

@@ -1,5 +1,6 @@
 {
   "$schema": "../schema.json",
+  "name": "kubeconform",
   "repo": "yannh/kubeconform",
   "assets": {
     "Linux": {
