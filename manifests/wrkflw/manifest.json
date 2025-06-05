@@ -1,0 +1,15 @@
+{
+  "$schema": "../schema.json",
+  "name": "wrkflw",
+  "repo": "bahdotsh/wrkflw",
+  "assets": {
+    "Linux": {
+      "X64": "wrkflw-v{version}-linux-x86_64.tar.gz"
+    },
+    "macOS": {
+      "X64": "wrkflw-v{version}-macos-x86_64.tar.gz",
+      "ARM64": "wrkflw-v{version}-macos-arm64.tar.gz"
+    }
+  },
+  "extract_patterns": ["wrkflw"]
+}
