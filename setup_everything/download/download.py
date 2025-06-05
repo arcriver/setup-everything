@@ -10,6 +10,7 @@ import sys
 import os
 import argparse
 
+from http import HTTPStatus
 from ..utils import log_error, log_notice, append_github_output, load_manifest
 
 
@@ -37,14 +38,15 @@ class Downloader:
 
         try:
             with urllib.request.urlopen(request) as response:
-                if response.status != 200:
-                    log_error(
-                        f"Failed to fetch release information: {response.status} {response.reason}"
-                    )
-                    sys.exit(1)
-
                 return json.loads(response.read().decode())
         except HTTPError as e:
+            if e.code == HTTPStatus.NOT_FOUND:
+                log_error(f"Release {release} not found in repository {repo}")
+                log_error(
+                    "Please raise a bug report at https://github.com/arcriver/setup-everything if this is unexpected"
+                )
+                sys.exit(1)
+
             log_error(f"HTTP Error: {e.code} {e.reason}")
             sys.exit(1)
         except URLError as e:
@@ -67,6 +69,10 @@ class Downloader:
             ):
                 out_file.write(response.read())
         except HTTPError as e:
+            if e.code == HTTPStatus.NOT_FOUND:
+                log_error(f"Asset not found: {asset_url}")
+                sys.exit(1)
+
             log_error(f"HTTP Error: {e.code} {e.reason}")
             sys.exit(1)
         except URLError as e:
