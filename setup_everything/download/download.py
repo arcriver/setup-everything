@@ -131,12 +131,12 @@ class Downloader:
 
         os_assets = assets.get(os_name)
         if not os_assets:
-            log_error(f"No assets found for OS: {os_name}")
+            log_error(f"No assets found for OS {os_name}")
             sys.exit(1)
 
         asset_url_template = os_assets.get(arch)
         if not asset_url_template:
-            log_error(f"No asset URL found for {os_name}-{arch}")
+            log_error(f"No assets found for ${os_name} {arch}")
             sys.exit(1)
 
         expected_filename = asset_url_template.format(version=version, release=release)
