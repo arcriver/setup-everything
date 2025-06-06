@@ -19,5 +19,20 @@
       "ARM64": "goreleaser_Darwin_all.tar.gz"
     }
   },
-  "extract_patterns": ["goreleaser", "goreleaser.exe"]
+  "extract_patterns": ["goreleaser", "goreleaser.exe"],
+  "test": {
+    "version": "2.9.0",
+    "checksums": {
+      "Linux": {
+        "X64": "a066fcd713684abed0d750d7559f1a5d794fa2faa8e8f1ad2eecec8c373668a7",
+        "ARM64": "574e83f5f0fc97803ff734c9342f8fd446d77e5e7ccac53debf09b4a8dbded80"
+      },
+      "Windows": {
+        "X64": "f56e85f8fd52875102dfc2b01dc07fc174486caebbac7e3aa9f29b4f0057d495"
+      },
+      "macOS": {
+        "ARM64": "82953b65c4b64e73b1077827663d97bf8e32592b4fc2cdb55c738bd484260a47"
+      }
+    }
+  }
 }

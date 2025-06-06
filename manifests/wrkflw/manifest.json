@@ -11,5 +11,17 @@
       "ARM64": "wrkflw-v{version}-macos-arm64.tar.gz"
     }
   },
-  "extract_patterns": ["wrkflw"]
+  "extract_patterns": ["wrkflw"],
+  "test": {
+    "version": "0.4.0",
+    "checksums": {
+      "Linux": {
+        "X64": "5143442cf5336720d4086c380b5bbb015db1bd0494b2521dc7bf8793a7a146fc"
+      },
+      "macOS": {
+        "X64": "c342c03c485c126241f3843463b31f512e93b6939e8a331e2552842d8b761f12",
+        "ARM64": "9801b2e74d7c37cf2180eb0e403df0ebfc4f4cf1ae530ada70850877e9f4b961"
+      }
+    }
+  }
 }

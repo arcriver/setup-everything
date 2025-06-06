@@ -1,6 +1,6 @@
 {
   "$schema": "../schema.json",
-  "name": "proto",
+  "name": "trivy",
   "repo": "aquasecurity/trivy",
   "assets": {
     "Linux": {
@@ -14,6 +14,21 @@
     "macOS": {
       "X64": "trivy_{version}_macOS-64bit.tar.gz",
       "ARM64": "trivy_{version}_macOS-ARM64.tar.gz"
+    }
+  },
+  "test": {
+    "version": "0.62.1",
+    "checksums": {
+      "Linux": {
+        "X64": "7da92b2ca503d08eb15e717585fa4ffb95ef2c5dc4c554204882d7d26d386a6a",
+        "ARM64": "50e13c5cdd3e3b610e0dc554e3bc58bc6f58eabe3e42a6b28961a23ac6eff0df"
+      },
+      "Windows": {
+        "X64": "f6d9b422f10af2d7a21b4924d36400d8a76932c9159b5feefaa8aee3e45a82bd"
+      },
+      "macOS": {
+        "ARM64": "0bbfa581a4139c6fef21f4129233ae6f02a9f4b53039327e62eccd7956af2ba1"
+      }
     }
   },
   "extract_patterns": ["trivy", "trivy.exe"]

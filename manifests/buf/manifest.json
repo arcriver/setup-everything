@@ -17,5 +17,20 @@
       "ARM64": "buf-Darwin-arm64.tar.gz"
     }
   },
-  "extract_patterns": ["buf", "buf.exe"]
+  "extract_patterns": ["buf", "buf.exe"],
+  "test": {
+    "version": "1.54.0",
+    "checksums": {
+      "Linux": {
+        "X64": "fa10faf16973f3861992cc2687b651350d70eafd467aea72cf0994556c2a0927",
+        "ARM64": "285c9925f61238b9f4160f9ec2e7999fa9146c9d48a0d2b2ec5b7cda885a9c17"
+      },
+      "Windows": {
+        "X64": "22c0b6d8e57e64c5d52328e04f0a40d892ef5b118b1900e3a1935b7cd58625c7"
+      },
+      "macOS": {
+        "ARM64": "f01f32a690efab3ef22a1c821aebc0c4bec7ca63faddbf64408d7d614e9d7f92"
+      }
+    }
+  }
 }

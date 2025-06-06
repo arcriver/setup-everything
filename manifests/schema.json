@@ -44,6 +44,35 @@
       },
       "minItems": 1,
       "uniqueItems": true
+    },
+    "test": {
+      "type": "object",
+      "description": "Test configuration for workflows",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Version to use for testing"
+        },
+        "checksums": {
+          "type": "object",
+          "description": "SHA256 checksums for test version by platform and architecture",
+          "patternProperties": {
+            "^(Linux|Windows|macOS)$": {
+              "type": "object",
+              "patternProperties": {
+                "^(X64|X86|ARM64|ARM)$": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["version", "checksums"],
+      "additionalProperties": false
     }
   },
   "additionalProperties": false,
