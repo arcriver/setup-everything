@@ -1,9 +1,9 @@
-name: "Install Proto"
-description: "Installs a specific version of Proto"
+name: "Install Trivy"
+description: "Installs a specific version of Trivy"
 
 inputs:
   version:
-    description: "Version of Proto to install"
+    description: "Version of Trivy to install"
     required: true
 
   arch:
@@ -21,7 +21,7 @@ inputs:
     required: true
 
   install-dir:
-    description: "Directory to install Proto"
+    description: "Directory to install Trivy"
     required: false
     default: "${{ runner.temp }}/bin"
 
@@ -40,7 +40,7 @@ runs:
         path: trivy_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}
         key: trivy-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
 
-    - name: Download Proto release asset
+    - name: Download Trivy release asset
       id: download
       shell: python
       env:
@@ -57,7 +57,7 @@ runs:
 
         download_from_env("${{ env.MANIFEST }}")
 
-    - name: Install Proto
+    - name: Install Trivy
       shell: python
       env:
         PYTHONPATH: "${{ github.action_path }}/../../.."
@@ -73,4 +73,4 @@ runs:
     - name: Verify installation
       shell: bash
       run: |
-        command -v proto
+        command -v trivy
