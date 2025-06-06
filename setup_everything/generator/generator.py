@@ -91,6 +91,41 @@ class ActionGenerator:
 
         return actions
 
+    def generate_workflow(
+        self,
+        manifest: Dict[str, Any],
+        tool_name: str,
+        template_name: str = "workflow.yml.j2",
+    ) -> str:
+        template = self.jinja_env.get_template(template_name)
+
+        context = {
+            "tool_name": tool_name,
+            "manifest": manifest,
+            "name": manifest.get("name", tool_name),
+            "repo": manifest["repo"],
+            "assets": manifest["assets"],
+            "extract_patterns": manifest["extract_patterns"],
+            "platforms": list(manifest["assets"].keys()),
+            "architectures": self._get_all_architectures(manifest["assets"]),
+        }
+
+        return template.render(**context)
+
+    def generate_all_workflows(
+        self, template_name: str = "workflow.yml.j2"
+    ) -> Dict[str, str]:
+        manifests = self.get_all_manifests()
+        workflows = {}
+
+        for tool_name, manifest in manifests.items():
+            if "test" in manifest:
+                workflows[tool_name] = self.generate_workflow(
+                    manifest, tool_name, template_name
+                )
+
+        return workflows
+
     def write_action_files(
         self, output_dir: Path, template_name: str = "action.yml.j2"
     ):
@@ -104,6 +139,21 @@ class ActionGenerator:
             with open(action_file, "w") as f:
                 f.write(action_content)
 
+    def write_workflow_files(
+        self, output_dir: Path, template_name: str = "workflow.yml.j2"
+    ):
+        workflows = self.generate_all_workflows(template_name)
+
+        if not workflows:
+            print("No manifests with test configuration found.")
+            return
+
+        for tool_name, workflow_content in workflows.items():
+            output_dir.mkdir(parents=True, exist_ok=True)
+            workflow_file = output_dir / f"setup-{tool_name}.yml"
+            with open(workflow_file, "w") as f:
+                f.write(workflow_content)
+
 
 def generate_actions_from_manifests(
     manifest_dir: str = "manifests",
@@ -116,6 +166,17 @@ def generate_actions_from_manifests(
     generator.write_action_files(output_path, template_name)
 
 
+def generate_workflows_from_manifests(
+    manifest_dir: str = "manifests",
+    output_dir: str = ".github/workflows",
+    template_dir: Optional[str] = None,
+    template_name: str = "workflow.yml.j2",
+) -> None:
+    generator = ActionGenerator(manifest_dir, template_dir)
+    output_path = Path(output_dir)
+    generator.write_workflow_files(output_path, template_name)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate GitHub Actions from manifest files"
@@ -125,16 +186,21 @@ def main():
         default="manifests",
         help="Directory containing manifest files (default: manifests)",
     )
-    parser.add_argument(
-        "--output-dir",
-        default=".github/actions",
-        help="Output directory for generated actions (default: .github/actions)",
-    )
     parser.add_argument("--template-dir", help="Custom template directory (optional)")
     parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show generated content without writing files",
+    )
+    parser.add_argument(
+        "--action-output-dir",
+        default=".github/actions",
+        help="Output directory for generated actions (default: .github/actions)",
+    )
+    parser.add_argument(
+        "--workflow-output-dir",
+        default=".github/workflows",
+        help="Output directory for generated workflows (default: .github/workflows)",
     )
 
     args = parser.parse_args()
@@ -143,16 +209,27 @@ def main():
         generator = ActionGenerator(args.manifest_dir, args.template_dir)
 
         if args.dry_run:
+            workflows = generator.generate_all_workflows()
+            for tool_name, workflow_content in workflows.items():
+                print(f"Generated test workflow for {tool_name}")
+                print(workflow_content)
+                print()
+
             actions = generator.generate_all_actions()
             for tool_name, action_content in actions.items():
                 print(f"Generated action for {tool_name}")
                 print(action_content)
                 print()
         else:
-            generate_actions_from_manifests(
-                args.manifest_dir, args.output_dir, args.template_dir
+            generate_workflows_from_manifests(
+                args.manifest_dir, args.workflow_output_dir, args.template_dir
             )
-            print(f"Generated all actions in {args.output_dir}")
+            print(f"Generated all test workflows in {args.workflow_output_dir}")
+
+            generate_actions_from_manifests(
+                args.manifest_dir, args.action_output_dir, args.template_dir
+            )
+            print(f"Generated all actions in {args.action_output_dir}")
 
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
