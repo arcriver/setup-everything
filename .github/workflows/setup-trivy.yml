@@ -7,7 +7,7 @@ on:
 
 jobs:
   setup-trivy-linux-x64:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: read
@@ -24,13 +24,8 @@ jobs:
           arch: X64
           sha256: 7da92b2ca503d08eb15e717585fa4ffb95ef2c5dc4c554204882d7d26d386a6a
 
-      - name: Verify Trivy installation (X64)
-        shell: bash
-        run: |
-          trivy --version
-
   setup-trivy-linux-arm64:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     permissions:
       contents: read
@@ -46,34 +41,6 @@ jobs:
           version: 0.62.1
           arch: ARM64
           sha256: 50e13c5cdd3e3b610e0dc554e3bc58bc6f58eabe3e42a6b28961a23ac6eff0df
-
-      - name: Verify Trivy installation (ARM64)
-        shell: bash
-        run: |
-          trivy --version
-
-  setup-trivy-macos:
-    runs-on: macos-latest
-
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Setup Trivy (ARM64)
-        uses: ./.github/actions/setup-trivy
-        with:
-          version: 0.62.1
-          arch: ARM64
-          sha256: 0bbfa581a4139c6fef21f4129233ae6f02a9f4b53039327e62eccd7956af2ba1
-
-      - name: Verify Trivy installation (ARM64)
-        shell: bash
-        run: |
-          trivy --version
 
   setup-trivy-windows:
     runs-on: windows-latest
@@ -93,7 +60,21 @@ jobs:
           arch: X64
           sha256: f6d9b422f10af2d7a21b4924d36400d8a76932c9159b5feefaa8aee3e45a82bd
 
-      - name: Verify Trivy installation (X64)
-        shell: bash
-        run: |
-          trivy --version
+  setup-trivy-macos-arm64:
+    runs-on: macos-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Trivy (ARM64)
+        uses: ./.github/actions/setup-trivy
+        with:
+          version: 0.62.1
+          arch: ARM64
+          sha256: 0bbfa581a4139c6fef21f4129233ae6f02a9f4b53039327e62eccd7956af2ba1
+

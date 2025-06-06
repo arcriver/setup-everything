@@ -24,11 +24,6 @@ jobs:
           arch: X64
           sha256: 294d995bd3bdcbb88d851fee61213322a53aa474125c0a6b09262e9c648cc83d
 
-      - name: Verify Hugo installation (X64)
-        shell: bash
-        run: |
-          hugo version
-
   setup-hugo-linux-arm64:
     runs-on: ubuntu-24.04-arm
 
@@ -46,34 +41,6 @@ jobs:
           version: 0.147.3
           arch: ARM64
           sha256: 314ecc637d544834d70f0d2a1432e3aa660feee7d40cd4ca1d23d27d9a63dd36
-
-      - name: Verify Hugo installation (ARM64)
-        shell: bash
-        run: |
-          hugo version
-
-  setup-hugo-macos:
-    runs-on: macos-latest
-
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Setup Hugo (Universal)
-        uses: ./.github/actions/setup-hugo
-        with:
-          version: 0.147.3
-          arch: ARM64
-          sha256: e2801e5fa8fe2406fb63b2dbf554ef51f79635e1bf6e13fcd1259967554ecedb
-
-      - name: Verify Hugo installation (Universal)
-        shell: bash
-        run: |
-          hugo version
 
   setup-hugo-windows:
     runs-on: windows-latest
@@ -93,7 +60,21 @@ jobs:
           arch: X64
           sha256: 0b40a86e9921a204f7e52a92fbda5db08a7fbc2521c3f1c598a54caf73e9d8c1
 
-      - name: Verify Hugo installation (X64)
-        shell: bash
-        run: |
-          hugo version
+  setup-hugo-macos-arm64:
+    runs-on: macos-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Hugo (ARM64)
+        uses: ./.github/actions/setup-hugo
+        with:
+          version: 0.147.3
+          arch: ARM64
+          sha256: e2801e5fa8fe2406fb63b2dbf554ef51f79635e1bf6e13fcd1259967554ecedb
+

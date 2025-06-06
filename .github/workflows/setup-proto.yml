@@ -24,11 +24,6 @@ jobs:
           arch: X64
           sha256: 7300222cb65eb1179ebde7d44462c01d3caf8b973af271e2988c695bb5adbf00
 
-      - name: Verify Proto installation (X64)
-        shell: bash
-        run: |
-          proto --version
-
   setup-proto-linux-arm64:
     runs-on: ubuntu-24.04-arm
 
@@ -46,34 +41,6 @@ jobs:
           version: 0.49.1
           arch: ARM64
           sha256: a50391b92e23634faef344a4832084e7c774fd2f51319e307bf5b76e04303bd8
-
-      - name: Verify Proto installation (ARM64)
-        shell: bash
-        run: |
-          proto --version
-
-  setup-proto-macos:
-    runs-on: macos-latest
-
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Setup Proto (ARM64)
-        uses: ./.github/actions/setup-proto
-        with:
-          version: 0.49.1
-          arch: ARM64
-          sha256: 01bf74537a762f86b4ff4fb61483f8d919b60a1d371d197cd373b1989a46c184
-
-      - name: Verify Proto installation (ARM64)
-        shell: bash
-        run: |
-          proto --version
 
   setup-proto-windows:
     runs-on: windows-latest
@@ -93,7 +60,21 @@ jobs:
           arch: X64
           sha256: 9b66004ce5d4ae67eba6816b287a18d173c3e33adcf66fe2e17536f5e52da263
 
-      - name: Verify Proto installation (X64)
-        shell: bash
-        run: |
-          proto --version
+  setup-proto-macos-arm64:
+    runs-on: macos-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Proto (ARM64)
+        uses: ./.github/actions/setup-proto
+        with:
+          version: 0.49.1
+          arch: ARM64
+          sha256: 01bf74537a762f86b4ff4fb61483f8d919b60a1d371d197cd373b1989a46c184
+
