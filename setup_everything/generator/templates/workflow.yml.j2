@@ -1,0 +1,114 @@
+name: Setup {% name | title_case %}
+
+permissions: {}
+
+on:
+  workflow_dispatch:
+
+jobs:
+{%% for platform, platform_assets in assets.items() %%}
+{%% if platform == "Linux" %%}
+{%% if "X64" in platform_assets and "Linux" in manifest.test.checksums and "X64" in manifest.test.checksums.Linux %%}
+  setup-{% tool_name %}-linux-x64:
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup {% name | title_case %} (X64)
+        uses: ./.github/actions/setup-{% tool_name %}
+        with:
+          version: {% manifest.test.version %}
+          arch: X64
+          sha256: {% manifest.test.checksums.Linux.X64 %}
+
+{%% endif %%}
+{%% if "ARM64" in platform_assets and "Linux" in manifest.test.checksums and "ARM64" in manifest.test.checksums.Linux %%}
+  setup-{% tool_name %}-linux-arm64:
+    runs-on: ubuntu-24.04-arm
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup {% name | title_case %} (ARM64)
+        uses: ./.github/actions/setup-{% tool_name %}
+        with:
+          version: {% manifest.test.version %}
+          arch: ARM64
+          sha256: {% manifest.test.checksums.Linux.ARM64 %}
+
+{%% endif %%}
+{%% elif platform == "macOS" %%}
+{%% if "X64" in platform_assets and "macOS" in manifest.test.checksums and "X64" in manifest.test.checksums.macOS %%}
+  setup-{% tool_name %}-macos-x64:
+    runs-on: macos-13
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup {% name | title_case %} (X64)
+        uses: ./.github/actions/setup-{% tool_name %}
+        with:
+          version: {% manifest.test.version %}
+          arch: X64
+          sha256: {% manifest.test.checksums.macOS.X64 %}
+
+{%% endif %%}
+{%% if "ARM64" in platform_assets and "macOS" in manifest.test.checksums and "ARM64" in manifest.test.checksums.macOS %%}
+  setup-{% tool_name %}-macos-arm64:
+    runs-on: macos-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup {% name | title_case %} (ARM64)
+        uses: ./.github/actions/setup-{% tool_name %}
+        with:
+          version: {% manifest.test.version %}
+          arch: ARM64
+          sha256: {% manifest.test.checksums.macOS.ARM64 %}
+
+{%% endif %%}
+{%% elif platform == "Windows" %%}
+{%% if "X64" in platform_assets and "Windows" in manifest.test.checksums and "X64" in manifest.test.checksums.Windows %%}
+  setup-{% tool_name %}-windows:
+    runs-on: windows-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup {% name | title_case %} (X64)
+        uses: ./.github/actions/setup-{% tool_name %}
+        with:
+          version: {% manifest.test.version %}
+          arch: X64
+          sha256: {% manifest.test.checksums.Windows.X64 %}
+
+{%% endif %%}
+{%% endif %%}
+{%% endfor %%}
