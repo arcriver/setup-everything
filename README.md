@@ -22,7 +22,7 @@ Example usage for setting up Kubeconform:
 
 ```yaml
 - name: Setup Kubeconform
-  uses: cedws/setup-everything/.github/actions/setup-kubeconform@{...}
+  uses: arcriver/setup-everything/.github/actions/setup-kubeconform@{...}
   with:
     version: 0.7.0
     arch: X64
