@@ -1,0 +1,76 @@
+name: Setup wrkflw
+
+permissions: {}
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-wrkflw-linux-x64:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup wrkflw (X64)
+        uses: ./.github/actions/setup-wrkflw
+        with:
+          version: 0.4.0
+          arch: X64
+          sha256: 5143442cf5336720d4086c380b5bbb015db1bd0494b2521dc7bf8793a7a146fc
+
+      - name: Verify wrkflw installation (X64)
+        shell: bash
+        run: |
+          wrkflw --version
+
+  setup-wrkflw-macos-x64:
+    runs-on: macos-13
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup wrkflw (X64)
+        uses: ./.github/actions/setup-wrkflw
+        with:
+          version: 0.4.0
+          arch: X64
+          sha256: c342c03c485c126241f3843463b31f512e93b6939e8a331e2552842d8b761f12
+
+      - name: Verify wrkflw installation (X64)
+        shell: bash
+        run: |
+          wrkflw --version
+
+  setup-wrkflw-macos-arm64:
+    runs-on: macos-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup wrkflw (ARM64)
+        uses: ./.github/actions/setup-wrkflw
+        with:
+          version: 0.4.0
+          arch: ARM64
+          sha256: 9801b2e74d7c37cf2180eb0e403df0ebfc4f4cf1ae530ada70850877e9f4b961
+
+      - name: Verify wrkflw installation (ARM64)
+        shell: bash
+        run: |
+          wrkflw --version
