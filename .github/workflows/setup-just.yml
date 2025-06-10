@@ -1,0 +1,98 @@
+name: Setup just
+
+permissions: {}
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-just-linux-x64:
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup just (X64)
+        uses: ./.github/actions/setup-just
+        with:
+          version: 1.40.0
+          arch: X64
+          sha256: 181b91d0ceebe8a57723fb648ed2ce1a44d849438ce2e658339df4f8db5f1263
+
+  setup-just-linux-arm64:
+    runs-on: ubuntu-24.04-arm
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup just (ARM64)
+        uses: ./.github/actions/setup-just
+        with:
+          version: 1.40.0
+          arch: ARM64
+          sha256: d065d0df1a1f99529869fba8a5b3e0a25c1795b9007099b00dfabe29c7c1f7b6
+
+  setup-just-windows:
+    runs-on: windows-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup just (X64)
+        uses: ./.github/actions/setup-just
+        with:
+          version: 1.40.0
+          arch: X64
+          sha256: 50d7c9b3ef3e38169bb62020cf8b091ac55e989c862fb0dde8af5a9b2505526a
+
+  setup-just-macos-x64:
+    runs-on: macos-13
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup just (X64)
+        uses: ./.github/actions/setup-just
+        with:
+          version: 1.40.0
+          arch: X64
+          sha256: 83e6b5380dc08f2d839f358327c9bb93184edf451955111ba6222be59ed1f172
+
+  setup-just-macos-arm64:
+    runs-on: macos-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup just (ARM64)
+        uses: ./.github/actions/setup-just
+        with:
+          version: 1.40.0
+          arch: ARM64
+          sha256: 0fb2401a46409bdf574f42f92df0418934166032ec2bcb0fc7919b7664fdcc01
+
