@@ -1,0 +1,76 @@
+name: "Install Ct"
+description: "Installs a specific version of Ct"
+
+inputs:
+  version:
+    description: "Version of Ct to install"
+    required: true
+
+  arch:
+    description: "Target architecture (e.g. ARM, ARM64, X64)"
+    required: false
+    default: "${{ runner.arch }}"
+
+  os:
+    description: "Target operating system (e.g. Linux, Windows, macOS)"
+    required: false
+    default: "${{ runner.os }}"
+
+  sha256:
+    description: "SHA256 checksum to verify the downloaded artifact"
+    required: true
+
+  install-dir:
+    description: "Directory to install Ct"
+    required: false
+    default: "${{ runner.temp }}/bin"
+
+  github-token:
+    description: "GitHub token for authentication"
+    required: false
+    default: "${{ github.token }}"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Restore cache
+      id: restore
+      uses: actions/cache@v4
+      with:
+        path: chart-testing_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}
+        key: chart-testing-${{ inputs.version }}-${{ inputs.arch }}-${{ inputs.sha256 }}
+
+    - name: Download Ct release asset
+      id: download
+      shell: python
+      env:
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        OS: "${{ inputs.os }}"
+        ARCH: "${{ inputs.arch }}"
+        VERSION: "${{ inputs.version }}"
+        FILE: "chart-testing_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
+        SHA256: "${{ inputs.sha256 }}"
+        GITHUB_TOKEN: "${{ inputs.github-token }}"
+        MANIFEST: "manifests/chart-testing/manifest.json"
+      run: |
+        from setup_everything.download.download import download_from_env
+
+        download_from_env("${{ env.MANIFEST }}")
+
+    - name: Install Ct
+      shell: python
+      env:
+        PYTHONPATH: "${{ github.action_path }}/../../.."
+        FILE: "chart-testing_${{ inputs.version }}_${{ inputs.os }}-${{ inputs.arch }}"
+        NAME: ${{ steps.download.outputs.filename }}
+        INSTALL_DIR: "${{ inputs.install-dir }}"
+        MANIFEST: "manifests/chart-testing/manifest.json"
+      run: |
+        from setup_everything.install.install import install_from_env
+
+        install_from_env("${{ env.MANIFEST }}")
+
+    - name: Verify installation
+      shell: bash
+      run: |
+        command -v ct

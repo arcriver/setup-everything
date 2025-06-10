@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema.json",
+  "name": "ct",
+  "repo": "helm/chart-testing",
+  "assets": {
+    "Linux": {
+      "X64": "chart-testing_{version}_linux_amd64.tar.gz",
+      "ARM64": "chart-testing_{version}_linux_arm64.tar.gz",
+      "ARM": "chart-testing_{version}_linux_armv6.tar.gz"
+    },
+    "Windows": {
+      "X64": "chart-testing_{version}_windows_amd64.zip",
+      "ARM64": "chart-testing_{version}_windows_arm64.zip",
+      "ARM": "chart-testing_{version}_windows_armv6.zip"
+    },
+    "macOS": {
+      "X64": "chart-testing_{version}_darwin_amd64.tar.gz",
+      "ARM64": "chart-testing_{version}_darwin_arm64.tar.gz"
+    }
+  },
+  "extract_patterns": ["ct", "ct.exe"],
+  "test": {
+    "version": "3.13.0",
+    "checksums": {
+      "Linux": {
+        "X64": "fcbae93a01887730054b5b0b4536b8cfbfe6010fdffccf66b8b87f5f764287d9",
+        "ARM64": "281420d4d4feb498090bffe7003866e43dfe9b270c10f3573044161b28659e97",
+        "ARM": "b537d9f8b105cee37de19f1726d1c7b9dc130084817bd4eaaabaa7dc84af78dd"
+      },
+      "Windows": {
+        "X64": "25a00adf758589591bbc1152b40f7286af67f9e78421ae9cc7ec2d8e962c8606",
+        "ARM64": "00b851254d7057bf4e8e6585d3731fe203dc09e00ff096387956d7b24f498299",
+        "ARM": "7397984d79677cb0d57dd6b7a9caf972aa8ac64fd22cb76e2c500f714a95123d"
+      },
+      "macOS": {
+        "X64": "8974f43f382511bf27ebcdf79df8d7da84391bc81723f89e9c94fa99ecdf2dea",
+        "ARM64": "28a9904faec853aa295bab89ee9fa43dad7d990862990ab0e8eb5aff6bdce013"
+      }
+    }
+  }
+}
