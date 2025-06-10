@@ -11,7 +11,7 @@
     },
     "name": {
       "type": "string",
-      "description": "Optional name for the tool, used for display purposes"
+      "description": "Name of tool binary"
     },
     "repo": {
       "type": "string",

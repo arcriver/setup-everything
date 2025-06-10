@@ -1,4 +1,4 @@
-name: Setup Wrkflw
+name: Setup wrkflw
 
 permissions: {}
 
@@ -17,7 +17,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Wrkflw (X64)
+      - name: Setup wrkflw (X64)
         uses: ./.github/actions/setup-wrkflw
         with:
           version: 0.4.0
@@ -35,7 +35,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Wrkflw (X64)
+      - name: Setup wrkflw (X64)
         uses: ./.github/actions/setup-wrkflw
         with:
           version: 0.4.0
@@ -53,7 +53,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Wrkflw (ARM64)
+      - name: Setup wrkflw (ARM64)
         uses: ./.github/actions/setup-wrkflw
         with:
           version: 0.4.0

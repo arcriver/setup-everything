@@ -1,4 +1,4 @@
-name: Setup Proto
+name: Setup proto
 
 permissions: {}
 
@@ -17,7 +17,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Proto (X64)
+      - name: Setup proto (X64)
         uses: ./.github/actions/setup-proto
         with:
           version: 0.49.1
@@ -35,7 +35,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Proto (ARM64)
+      - name: Setup proto (ARM64)
         uses: ./.github/actions/setup-proto
         with:
           version: 0.49.1
@@ -53,7 +53,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Proto (X64)
+      - name: Setup proto (X64)
         uses: ./.github/actions/setup-proto
         with:
           version: 0.49.1
@@ -71,7 +71,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Proto (ARM64)
+      - name: Setup proto (ARM64)
         uses: ./.github/actions/setup-proto
         with:
           version: 0.49.1

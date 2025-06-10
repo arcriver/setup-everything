@@ -1,4 +1,4 @@
-name: Setup {% name | title_case %}
+name: Setup {% tool_name %}
 
 permissions: {}
 
@@ -20,7 +20,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup {% name | title_case %} (X64)
+      - name: Setup {% name %} (X64)
         uses: ./.github/actions/setup-{% tool_name %}
         with:
           version: {% manifest.test.version %}
@@ -40,7 +40,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup {% name | title_case %} (ARM64)
+      - name: Setup {% name %} (ARM64)
         uses: ./.github/actions/setup-{% tool_name %}
         with:
           version: {% manifest.test.version %}
@@ -61,7 +61,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup {% name | title_case %} (X64)
+      - name: Setup {% name %} (X64)
         uses: ./.github/actions/setup-{% tool_name %}
         with:
           version: {% manifest.test.version %}
@@ -81,7 +81,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup {% name | title_case %} (ARM64)
+      - name: Setup {% name %} (ARM64)
         uses: ./.github/actions/setup-{% tool_name %}
         with:
           version: {% manifest.test.version %}
@@ -102,7 +102,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup {% name | title_case %} (X64)
+      - name: Setup {% name %} (X64)
         uses: ./.github/actions/setup-{% tool_name %}
         with:
           version: {% manifest.test.version %}

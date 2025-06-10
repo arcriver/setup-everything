@@ -1,4 +1,4 @@
-name: Setup Goreleaser
+name: Setup goreleaser
 
 permissions: {}
 
@@ -17,7 +17,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Goreleaser (X64)
+      - name: Setup goreleaser (X64)
         uses: ./.github/actions/setup-goreleaser
         with:
           version: 2.9.0
@@ -35,7 +35,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Goreleaser (ARM64)
+      - name: Setup goreleaser (ARM64)
         uses: ./.github/actions/setup-goreleaser
         with:
           version: 2.9.0
@@ -53,7 +53,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Goreleaser (X64)
+      - name: Setup goreleaser (X64)
         uses: ./.github/actions/setup-goreleaser
         with:
           version: 2.9.0
@@ -71,7 +71,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Goreleaser (ARM64)
+      - name: Setup goreleaser (ARM64)
         uses: ./.github/actions/setup-goreleaser
         with:
           version: 2.9.0

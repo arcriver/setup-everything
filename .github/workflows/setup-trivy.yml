@@ -1,4 +1,4 @@
-name: Setup Trivy
+name: Setup trivy
 
 permissions: {}
 
@@ -17,7 +17,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Trivy (X64)
+      - name: Setup trivy (X64)
         uses: ./.github/actions/setup-trivy
         with:
           version: 0.62.1
@@ -35,7 +35,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Trivy (ARM64)
+      - name: Setup trivy (ARM64)
         uses: ./.github/actions/setup-trivy
         with:
           version: 0.62.1
@@ -53,7 +53,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Trivy (X64)
+      - name: Setup trivy (X64)
         uses: ./.github/actions/setup-trivy
         with:
           version: 0.62.1
@@ -71,7 +71,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Trivy (ARM64)
+      - name: Setup trivy (ARM64)
         uses: ./.github/actions/setup-trivy
         with:
           version: 0.62.1
