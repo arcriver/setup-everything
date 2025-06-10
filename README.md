@@ -31,6 +31,16 @@ Example usage for setting up Kubeconform:
 
 See [here](./docs/actions.md) for a list of available Actions.
 
+## Limitations
+
+setup-everything has a number of limitations by design to keep complexity under control.
+
+- It does not support additional steps in setting up a tool, such as setting up dotfiles or configuring the shell. It concerns itself purely with retrieving binaries for a tool.
+
+- It may not be able to support installation of all versions of a tool if that tool has inconsistencies in the naming or packaging of its GitHub release assets. It prioritises being able to install the latest version of a tool.
+
+- It only supports installation of tools from GitHub (for now)
+
 ## Development
 
 ### Prerequisites
