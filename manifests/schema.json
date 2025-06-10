@@ -18,6 +18,10 @@
       "pattern": "^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$",
       "description": "GitHub repository in format 'owner/name'"
     },
+    "release_pattern": {
+      "type": "string",
+      "description": "GitHub release pattern to use (defaults to 'v{version}')"
+    },
     "assets": {
       "type": "object",
       "description": "Platform-specific asset definitions",

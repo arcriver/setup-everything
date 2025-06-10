@@ -112,11 +112,7 @@ class Downloader:
         output_file: str,
         expected_sha256: str,
         manifest: str,
-        release: Optional[str] = None,
     ) -> Any:
-        if not release:
-            release = f"v{version}"
-
         manifest_data = load_manifest(manifest)
 
         repo = manifest_data.get("repo")
@@ -127,6 +123,15 @@ class Downloader:
         assets = manifest_data.get("assets")
         if not assets:
             log_error("Assets not specified in manifest")
+            sys.exit(1)
+
+        release_pattern = manifest_data.get("release_pattern")
+        if not release_pattern:
+            release_pattern = "v{version}"
+
+        release = release_pattern.format(version=version)
+        if not release:
+            log_error("Release not specified and no default release pattern found")
             sys.exit(1)
 
         os_assets = assets.get(os_name)
@@ -165,10 +170,9 @@ class Downloader:
         output_file: str,
         expected_sha256: str,
         manifest: str,
-        release: Optional[str] = None,
     ) -> str:
         asset = self.get_release(
-            arch, os_name, version, output_file, expected_sha256, manifest, release
+            arch, os_name, version, output_file, expected_sha256, manifest
         )
 
         filename = asset["name"]
@@ -190,7 +194,6 @@ def download_from_env(manifest: str) -> str:
     arch = os.getenv("ARCH", "")
     os_name = os.getenv("OS", "")
     version = os.getenv("VERSION", "")
-    release = os.getenv("RELEASE")
     output_file = os.getenv("FILE", "")
     expected_sha256 = os.getenv("SHA256", "")
     github_token = os.getenv("GITHUB_TOKEN", "")
@@ -207,7 +210,6 @@ def download_from_env(manifest: str) -> str:
         output_file=output_file,
         expected_sha256=expected_sha256,
         manifest=manifest,
-        release=release,
     )
 
 
@@ -227,10 +229,6 @@ def parse_arguments():
         "--version",
         required=True,
         help="Version number of the release (e.g., 0.62.1)",
-    )
-    parser.add_argument(
-        "--release",
-        help="Release tag of the GitHub release (defaults to --version)",
     )
     parser.add_argument("--file", required=True, help="Path to download the asset")
     parser.add_argument(
@@ -261,7 +259,6 @@ def main():
             output_file=args.file,
             expected_sha256=args.sha256,
             manifest=args.manifest,
-            release=args.release,
         )
     else:
         download_from_env(args.manifest)

@@ -54,6 +54,10 @@ def validate_manifest_schema(manifest: Dict[str, Any]) -> None:
         log_error("Field 'repo' must be a string")
         sys.exit(1)
 
+    if not isinstance(manifest["release_pattern"], str):
+        log_error("Field 'release_pattern' must be a string")
+        sys.exit(1)
+
     if not isinstance(manifest["assets"], dict):
         log_error("Field 'assets' must be a dictionary")
         sys.exit(1)
